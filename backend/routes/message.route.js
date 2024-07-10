@@ -37,14 +37,23 @@ messageRoutes.route('/').get(verifyToken, async (req, res) => {
   }
 });
 
-// Get inbox messages
 messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
     const order = req.query.order === 'asc' ? 1 : -1;
     const sortCriteria = { [sortBy]: order };
-    const messages = await Message.find({ receiverUsername: req.user.username }).sort(sortCriteria).exec();
-    res.json(messages);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const messages = await Message.find({ receiverUsername: req.user.username })
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const totalMessages = await Message.countDocuments({ receiverUsername: req.user.username });
+
+    res.json({ messages, totalMessages });
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
@@ -57,8 +66,18 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
     const sortBy = req.query.sortBy || 'timestamp';
     const order = req.query.order === 'asc' ? 1 : -1;
     const sortCriteria = { [sortBy]: order };
-    const messages = await Message.find({ senderUsername: req.user.username }).sort(sortCriteria).exec();
-    res.json(messages);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const messages = await Message.find({ senderUsername: req.user.username })
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const totalMessages = await Message.countDocuments({ senderUsername: req.user.username });
+
+    res.json({ messages, totalMessages });
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');

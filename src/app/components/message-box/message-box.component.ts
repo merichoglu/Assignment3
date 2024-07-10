@@ -15,6 +15,9 @@ export class MessageBoxComponent implements OnInit {
   messageType: 'inbox' | 'outbox' = 'inbox';
   sortColumn: string = '';
   sortOrder: 'asc' | 'desc' = 'asc';
+  page: number = 1;
+  limit: number = 10;
+  totalMessages: number = 0;
 
   constructor(private apiService: ApiService) {}
 
@@ -22,21 +25,14 @@ export class MessageBoxComponent implements OnInit {
     this.loadMessages();
   }
 
-  toggleMessageType(type: 'inbox' | 'outbox'): void {
-    this.messageType = type;
-    this.loadMessages();
+  get totalPages(): number {
+    return Math.ceil(this.totalMessages / this.limit);
   }
 
-  loadMessages(): void {
-    const params = new HttpParams().set('sortBy', this.sortColumn).set('order', this.sortOrder);
-    const messageObservable = this.messageType === 'inbox'
-      ? this.apiService.getInbox(params)
-      : this.apiService.getOutbox(params);
-
-    messageObservable.subscribe((messages: Message[]) => {
-      this.messages = messages;
-      this.filterMessages();
-    });
+  toggleMessageType(type: 'inbox' | 'outbox'): void {
+    this.messageType = type;
+    this.page = 1;  // reset to page 1 when toggling
+    this.loadMessages();
   }
 
   filterMessages(): void {
@@ -60,6 +56,29 @@ export class MessageBoxComponent implements OnInit {
       this.sortColumn = column;
       this.sortOrder = 'asc';
     }
+    this.loadMessages();
+  }
+
+  loadMessages(): void {
+    let params = new HttpParams()
+      .set('sortBy', this.sortColumn)
+      .set('order', this.sortOrder)
+      .set('page', this.page)
+      .set('limit', this.limit);
+
+    const messageObservable = this.messageType === 'inbox'
+      ? this.apiService.getInbox(params)
+      : this.apiService.getOutbox(params);
+
+    messageObservable.subscribe((response: { messages: Message[], totalMessages: number }) => {
+      this.messages = response.messages;
+      this.totalMessages = response.totalMessages;
+      this.filterMessages();
+    });
+  }
+
+  goToPage(page: number): void {
+    this.page = page;
     this.loadMessages();
   }
 }
