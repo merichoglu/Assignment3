@@ -71,11 +71,11 @@ export class ApiService {
   }
 
   getInbox(params: HttpParams): Observable<{ messages: Message[], totalMessages: number }> {
-    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/inbox`, { headers: this.getAuthHeaders().headers, params: params });
+    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/inbox`, { headers: this.getAuthHeaders().headers, params });
   }
 
   getOutbox(params: HttpParams): Observable<{ messages: Message[], totalMessages: number }> {
-    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/outbox`, { headers: this.getAuthHeaders().headers, params: params });
+    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/outbox`, { headers: this.getAuthHeaders().headers, params });
   }
 
   sendMessage(message: Message): Observable<any> {

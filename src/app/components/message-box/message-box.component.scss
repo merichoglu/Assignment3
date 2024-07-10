@@ -2,6 +2,12 @@
   margin-top: 20px;
 }
 
+.message-count {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -9,7 +15,7 @@
 }
 
 .button-group .btn {
-  margin-left: 5px;
+  margin-left: 20px;
 }
 
 .pagination {
