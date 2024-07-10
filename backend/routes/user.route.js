@@ -35,13 +35,13 @@ userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
       .limit(limit)
       .exec();
 
-    const total = await User.countDocuments().exec();
+    const totalUsers = await User.countDocuments().exec();
 
     res.json({
       users,
-      total,
+      totalUsers,
       page,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(totalUsers / limit)
     });
   } catch (err) {
     console.log(err);

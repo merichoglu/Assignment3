@@ -10,12 +10,14 @@ import {Router} from '@angular/router';
 })
 export class AdminPanelComponent implements OnInit {
   users: User[] = [];
+  totalUsers: number = 0;
   filteredUsers: User[] = [];
   searchQuery: string = '';
   sortBy: string = 'username';
   sortDirection: 'asc' | 'desc' = 'asc';
   currentPage: number = 1;
   totalPages: number = 1;
+  limit: number = 10;
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -37,14 +39,7 @@ export class AdminPanelComponent implements OnInit {
       }
     );
   }
-
-  loadUsers(): void {
-    this.apiService.getUsers(this.currentPage, 10, this.sortBy, this.sortDirection).subscribe(response => {
-      this.users = response.users;
-      this.totalPages = response.pages;
-      this.searchUsers();
-    });
-  }
+  protected readonly Math = Math;
 
   sortUsers(field: string) {
     if (this.sortBy === field) {
@@ -70,5 +65,14 @@ export class AdminPanelComponent implements OnInit {
       this.currentPage = page;
       this.loadUsers();
     }
+  }
+
+  loadUsers(): void {
+    this.apiService.getUsers(this.currentPage, 10, this.sortBy, this.sortDirection).subscribe(response => {
+      this.users = response.users;
+      this.totalPages = response.pages;
+      this.totalUsers = response.totalUsers;
+      this.searchUsers();
+    });
   }
 }

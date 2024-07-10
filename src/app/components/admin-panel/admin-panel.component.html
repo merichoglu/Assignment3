@@ -1,7 +1,9 @@
 <div class="container">
-  <h2>User Panel</h2>
+  <h2>Admin Panel</h2>
+  <div class="total-count">Total users: <b>{{ totalUsers }}</b></div>
   <input type="text" class="form-control mt-3 mb-3" placeholder="Search Users" [(ngModel)]="searchQuery" (input)="searchUsers()">
-  <table class="table table-hover">
+
+  <table class="table table-striped">
     <thead>
     <tr>
       <th (click)="sortUsers('username')">Username <span *ngIf="sortBy === 'username'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
@@ -12,13 +14,13 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let user of filteredUsers">
+    <tr *ngFor="let user of users">
       <td>{{ user.username }}</td>
       <td>{{ user.name }}</td>
       <td>{{ user.surname }}</td>
       <td>{{ user.email }}</td>
       <td>
-        <button (click)="editUser(user.username)" class="btn btn-warning me-2">Edit</button>
+        <button (click)="editUser(user.username)" class="btn btn-warning">Edit</button>
         <button (click)="deleteUser(user.username)" class="btn btn-danger">Delete</button>
       </td>
     </tr>
@@ -30,10 +32,10 @@
       <li [class.disabled]="currentPage === 1" class="page-item">
         <a (click)="changePage(currentPage - 1)" class="page-link">Previous</a>
       </li>
-      <li *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="page === currentPage" class="page-item">
+      <li *ngFor="let p of [].constructor(Math.ceil(totalUsers / limit)); let i = index" [class.active]="currentPage === i + 1" class="page-item">
         <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
       </li>
-      <li [class.disabled]="currentPage === totalPages" class="page-item">
+      <li [class.disabled]="currentPage === Math.ceil(totalUsers / limit)" class="page-item">
         <a (click)="changePage(currentPage + 1)" class="page-link">Next</a>
       </li>
     </ul>
