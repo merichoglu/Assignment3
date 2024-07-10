@@ -51,6 +51,7 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   }
 });
 
+// Get outbox messages
 messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
