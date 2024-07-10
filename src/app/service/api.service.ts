@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { jwtDecode } from 'jwt-decode'; // Correct import for named export
-import { User } from 'src/app/model/user';
-import { Message } from 'src/app/model/message';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
+import {jwtDecode} from 'jwt-decode'; // Correct import for named export
+import {User} from 'src/app/model/user';
+import {Message} from 'src/app/model/message';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,6 @@ import { Message } from 'src/app/model/message';
 export class ApiService {
   private baseUrl = 'http://localhost:4000';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -38,10 +37,6 @@ export class ApiService {
         }
       })
     );
-  }
-
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
   }
 
   getUsers(sortBy: string = 'username', sortDirection: string = 'asc', searchQuery: string = ''): Observable<User[]> {
