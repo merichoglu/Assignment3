@@ -1,17 +1,18 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../service/api.service';
 import {Message} from '../../model/message';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
 import {map, Observable} from "rxjs";
 import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
+import {User} from "../../model/user";
 
 @Component({
   selector: 'app-send-message',
   templateUrl: './send-message.component.html',
   styleUrls: ['./send-message.component.scss']
 })
-export class SendMessageComponent {
+export class SendMessageComponent implements OnInit {
   message: Message = {
     senderUsername: '',
     receiverUsername: '',
@@ -29,10 +30,18 @@ export class SendMessageComponent {
   }
 
   loadUserList(): void {
-    this.apiService.getAllUsersForTypeAhead().subscribe((users: any[]) => {
-      this.userList = users.map(user => user.username);
-    }, error => {
-      this.errorMessage = 'Error loading user list';
+    this.apiService.getAllUsersForTypeAhead().subscribe({
+      next: (response: { users: User[] }) => {
+        if (Array.isArray(response.users)) {
+          this.userList = response.users.map(user => user.username);
+        } else {
+          this.userList = [];
+        }
+      },
+      error: (err) => {
+        console.error('Error loading user list:', err);
+        this.userList = [];
+      }
     });
   }
 
@@ -42,7 +51,7 @@ export class SendMessageComponent {
         : this.userList.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     );
 
-  sendMessage() {
+  sendMessage(): void {
     const token = localStorage.getItem('token');
     if (token) {
       const user = this.parseJwt(token);
@@ -70,7 +79,7 @@ export class SendMessageComponent {
 
   parseJwt(token: string): any {
     try {
-      return jwtDecode( token);
+      return jwtDecode(token);
     } catch (e) {
       console.error('Error decoding token', e);
       return null;

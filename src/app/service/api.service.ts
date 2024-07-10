@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode'; // Correct import for named export
 import {User} from 'src/app/model/user';
@@ -82,9 +82,13 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/messages/send`, message, this.getAuthHeaders());
   }
 
-  getAllUsersForTypeAhead(): Observable<User[]> {
-    const headers = this.getAuthHeaders().headers;
-    return this.http.get<User[]>(`${this.baseUrl}/users`, { headers });
+  getAllUsersForTypeAhead(): Observable<{ users: User[] }> {
+    return this.http.get<{ users: User[] }>(`${this.baseUrl}/users`, this.getAuthHeaders()).pipe(
+      catchError((error) => {
+        console.error('Error fetching users for typeahead:', error);
+        return of({ users: [] });
+      })
+    );
   }
 
   private getAuthHeaders() {
