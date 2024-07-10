@@ -82,6 +82,11 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/messages/send`, message, this.getAuthHeaders());
   }
 
+  getAllUsersForTypeAhead(): Observable<User[]> {
+    const headers = this.getAuthHeaders().headers;
+    return this.http.get<User[]>(`${this.baseUrl}/users`, { headers });
+  }
+
   private getAuthHeaders() {
     const token = localStorage.getItem('token');
     return {

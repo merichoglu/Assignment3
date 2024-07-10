@@ -11,6 +11,7 @@ import {AdminPanelComponent} from './components/admin-panel/admin-panel.componen
 import {SendMessageComponent} from './components/send-message/send-message.component';
 import {UserFormComponent} from "./components/user-form/user-form.component";
 import {MessageBoxComponent} from './components/message-box/message-box.component';
+import {NgbTypeahead} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {MessageBoxComponent} from './components/message-box/message-box.componen
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbTypeahead
   ],
   providers: [],
   bootstrap: [AppComponent]

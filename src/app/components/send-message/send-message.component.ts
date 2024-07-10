@@ -3,6 +3,8 @@ import {ApiService} from '../../service/api.service';
 import {Message} from '../../model/message';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
+import {map, Observable} from "rxjs";
+import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-send-message',
@@ -18,8 +20,27 @@ export class SendMessageComponent {
     content: ''
   };
   errorMessage: string = '';
+  userList: string[] = [];
 
   constructor(private apiService: ApiService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loadUserList();
+  }
+
+  loadUserList(): void {
+    this.apiService.getAllUsersForTypeAhead().subscribe((users: any[]) => {
+      this.userList = users.map(user => user.username);
+    }, error => {
+      this.errorMessage = 'Error loading user list';
+    });
+  }
+
+  search = (text$: Observable<string>) =>
+    text$.pipe(
+      map(term => term.length < 2 ? []
+        : this.userList.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+    );
 
   sendMessage() {
     const token = localStorage.getItem('token');
@@ -54,5 +75,9 @@ export class SendMessageComponent {
       console.error('Error decoding token', e);
       return null;
     }
+  }
+
+  onSelect(event: NgbTypeaheadSelectItemEvent): void {
+    this.message.receiverUsername = event.item;
   }
 }
