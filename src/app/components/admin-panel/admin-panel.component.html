@@ -1,9 +1,9 @@
 <div class="container">
   <h2>Admin Panel</h2>
-  <div class="total-count">Total users: <b>{{ totalUsers }}</b></div>
+  <div>Total users: <b>{{ totalUsers }}</b></div>
   <input type="text" class="form-control mt-3 mb-3" placeholder="Search Users" [(ngModel)]="searchQuery" (input)="searchUsers()">
 
-  <table class="table table-striped table-hover">
+  <table class="table table-striped">
     <thead>
     <tr>
       <th (click)="sortUsers('username')">Username <span *ngIf="sortBy === 'username'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
@@ -14,7 +14,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let user of filteredUsers">
+    <tr *ngFor="let user of users">
       <td>{{ user.username }}</td>
       <td>{{ user.name }}</td>
       <td>{{ user.surname }}</td>

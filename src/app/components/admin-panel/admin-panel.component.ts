@@ -30,14 +30,17 @@ export class AdminPanelComponent implements OnInit {
   }
 
   deleteUser(username: string): void {
-    this.apiService.deleteUser(username).subscribe(
-      () => {
-        this.users = this.users.filter(user => user.username !== username);
-      },
-      error => {
-        console.error('Error deleting user:', error);
-      }
-    );
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      this.apiService.deleteUser(username).subscribe(
+        () => {
+          this.users = this.users.filter(user => user.username !== username);
+          this.loadUsers();
+        },
+        error => {
+          console.error('Error deleting user:', error);
+        }
+      );
+    }
   }
 
   protected readonly Math = Math;
