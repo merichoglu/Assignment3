@@ -1,13 +1,13 @@
 <div class="container">
-  <h1 class="mt-5">Admin Panel</h1>
+  <h2>Admin Panel</h2>
   <input type="text" class="form-control mt-3 mb-3" placeholder="Search Users" [(ngModel)]="searchQuery" (input)="searchUsers()">
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>Username</th>
-      <th>Name</th>
-      <th>Surname</th>
-      <th>Email</th>
+      <th (click)="sortUsers('username')">Username</th>
+      <th (click)="sortUsers('name')">Name</th>
+      <th (click)="sortUsers('surname')">Surname</th>
+      <th (click)="sortUsers('email')">Email</th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -18,8 +18,8 @@
       <td>{{ user.surname }}</td>
       <td>{{ user.email }}</td>
       <td>
-        <button class="btn btn-warning" (click)="editUser(user.username)">Edit</button>
-        <button class="btn btn-danger" (click)="deleteUser(user.username)">Delete</button>
+        <button class="btn btn-warning btn-sm" (click)="editUser(user.username)">Edit</button>
+        <button class="btn btn-danger btn-sm" (click)="deleteUser(user.username)">Delete</button>
       </td>
     </tr>
     </tbody>

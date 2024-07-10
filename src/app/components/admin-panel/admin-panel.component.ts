@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 export class AdminPanelComponent implements OnInit {
   users: User[] = [];
   searchQuery: string = '';
+  sortBy: string = '';
+  sortDirection: string = 'asc';
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -26,13 +28,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   searchUsers(): void {
-    if (this.searchQuery) {
-      this.users = this.users.filter(user =>
-        user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    } else {
-      this.ngOnInit();
-    }
+    this.loadUsers();
   }
 
   editUser(username: string): void {
@@ -48,5 +44,26 @@ export class AdminPanelComponent implements OnInit {
         console.error('Error deleting user:', error);
       }
     );
+  }
+
+  loadUsers() {
+    this.apiService.getUsers(this.sortBy, this.sortDirection).subscribe(
+      (data: User[]) => {
+        this.users = data;
+      },
+      error => {
+        console.error('Error fetching users', error);
+      }
+    );
+  }
+
+  sortUsers(field: string) {
+    if (this.sortBy === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = field;
+      this.sortDirection = 'asc';
+    }
+    this.loadUsers();
   }
 }

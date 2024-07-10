@@ -20,17 +20,28 @@ userRoutes.route('/logAccess').post(verifyToken, async (req, res) => {
 });
 
 // Get all users with paging and sorting
-userRoutes.route('/').get(verifyToken, async (req, res) => {
-  const { page = 1, limit = 10, sortBy = 'username', order = 'asc' } = req.query;
+userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const users = await User.find()
-      .sort({ [sortBy]: order === 'asc' ? 1 : -1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-    const total = await User.countDocuments();
-    res.json({ users, total });
+    const { sortBy, sortDirection, searchQuery } = req.query;
+    const sortDir = sortDirection === 'desc' ? -1 : 1;
+    const sortCriteria = sortBy ? { [sortBy]: sortDir } : {};
+
+    const searchCriteria = searchQuery
+      ? {
+        $or: [
+          { username: { $regex: searchQuery, $options: 'i' } },
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { surname: { $regex: searchQuery, $options: 'i' } },
+          { email: { $regex: searchQuery, $options: 'i' } },
+        ],
+      }
+      : {};
+
+    const users = await User.find(searchCriteria).sort(sortCriteria).exec();
+    res.json(users);
   } catch (err) {
-    res.status(500).json({ message: 'Fetching users failed' });
+    console.log(err);
+    res.status(500).send('Internal server error');
   }
 });
 

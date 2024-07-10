@@ -44,10 +44,15 @@ export class ApiService {
     return this.currentUserSubject.value;
   }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<{ users: User[] }>(`${this.baseUrl}/users`, this.getAuthHeaders()).pipe(
-      map(response => response.users)
-    );
+  getUsers(sortBy: string = 'username', sortDirection: string = 'asc', searchQuery: string = ''): Observable<User[]> {
+    const headers = this.getAuthHeaders().headers;
+    let params = new HttpParams();
+    params = params.append('sortBy', sortBy);
+    params = params.append('sortDirection', sortDirection);
+    if (searchQuery) {
+      params = params.append('searchQuery', searchQuery);
+    }
+    return this.http.get<User[]>(`${this.baseUrl}/users`, { headers, params });
   }
 
   getUser(username: string): Observable<User> {
