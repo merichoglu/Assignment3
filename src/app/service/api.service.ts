@@ -39,15 +39,18 @@ export class ApiService {
     );
   }
 
-  getUsers(sortBy: string = 'username', sortDirection: string = 'asc', searchQuery: string = ''): Observable<User[]> {
-    const headers = this.getAuthHeaders().headers;
-    let params = new HttpParams();
-    params = params.append('sortBy', sortBy);
-    params = params.append('sortDirection', sortDirection);
-    if (searchQuery) {
-      params = params.append('searchQuery', searchQuery);
-    }
-    return this.http.get<User[]>(`${this.baseUrl}/users`, { headers, params });
+  getUsers(page: number, limit: number, sortBy: string, order: string): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    });
+
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('order', order);
+
+    return this.http.get<any>(`${this.baseUrl}/users`, { headers, params });
   }
 
   getUser(username: string): Observable<User> {

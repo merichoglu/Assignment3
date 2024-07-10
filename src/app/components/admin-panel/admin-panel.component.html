@@ -24,4 +24,18 @@
     </tr>
     </tbody>
   </table>
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li [class.disabled]="currentPage === 1" class="page-item">
+        <a (click)="changePage(currentPage - 1)" class="page-link">Previous</a>
+      </li>
+      <li *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="page === currentPage" class="page-item">
+        <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
+      </li>
+      <li [class.disabled]="currentPage === totalPages" class="page-item">
+        <a (click)="changePage(currentPage + 1)" class="page-link">Next</a>
+      </li>
+    </ul>
+  </nav>
 </div>

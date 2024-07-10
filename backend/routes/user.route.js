@@ -22,23 +22,27 @@ userRoutes.route('/logAccess').post(verifyToken, async (req, res) => {
 // Get all users with paging and sorting
 userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { sortBy, sortDirection, searchQuery } = req.query;
-    const sortDir = sortDirection === 'desc' ? -1 : 1;
-    const sortCriteria = sortBy ? { [sortBy]: sortDir } : {};
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortBy = req.query.sortBy || 'username';
+    const order = req.query.order === 'asc' ? 1 : -1;
 
-    const searchCriteria = searchQuery
-      ? {
-        $or: [
-          { username: { $regex: searchQuery, $options: 'i' } },
-          { name: { $regex: searchQuery, $options: 'i' } },
-          { surname: { $regex: searchQuery, $options: 'i' } },
-          { email: { $regex: searchQuery, $options: 'i' } },
-        ],
-      }
-      : {};
+    const sortCriteria = { [sortBy]: order };
 
-    const users = await User.find(searchCriteria).sort(sortCriteria).exec();
-    res.json(users);
+    const users = await User.find()
+      .sort(sortCriteria)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    const total = await User.countDocuments().exec();
+
+    res.json({
+      users,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');

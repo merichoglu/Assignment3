@@ -10,10 +10,12 @@ import {Router} from '@angular/router';
 })
 export class AdminPanelComponent implements OnInit {
   users: User[] = [];
-  searchQuery: string = '';
   filteredUsers: User[] = [];
+  searchQuery: string = '';
   sortBy: string = 'username';
-  sortDirection: string = 'asc';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  currentPage: number = 1;
+  totalPages: number = 1;
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -36,10 +38,11 @@ export class AdminPanelComponent implements OnInit {
     );
   }
 
-  loadUsers() {
-    this.apiService.getUsers(this.sortBy, this.sortDirection).subscribe((data: User[]) => {
-      this.users = data;
-      this.filteredUsers = data;
+  loadUsers(): void {
+    this.apiService.getUsers(this.currentPage, 10, this.sortBy, this.sortDirection).subscribe(response => {
+      this.users = response.users;
+      this.totalPages = response.pages;
+      this.searchUsers();
     });
   }
 
@@ -60,5 +63,12 @@ export class AdminPanelComponent implements OnInit {
       user.surname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+  }
+
+  changePage(page: number): void {
+    if (page > 0 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadUsers();
+    }
   }
 }
