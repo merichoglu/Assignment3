@@ -13,6 +13,7 @@ export class UserFormComponent implements OnInit {
   userForm: FormGroup;
   isEditMode: boolean = false;
   username: string;
+  usernameExists: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -22,8 +23,19 @@ export class UserFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      if (params['username']) {
+        this.isEditMode = true;
+        this.username = params['username'];
+        this.apiService.getUser(this.username).subscribe(user => {
+          this.userForm.patchValue(user);
+          this.userForm.get('username').disable(); // Disable username field in edit mode
+        });
+      }
+    });
+
     this.userForm = this.fb.group({
-      username: [{ value: '', disabled: this.isEditMode }, Validators.required],
+      username: ['', Validators.required],
       password: ['', Validators.required],
       name: ['', Validators.required],
       surname: ['', Validators.required],
@@ -33,20 +45,11 @@ export class UserFormComponent implements OnInit {
       location: ['', Validators.required],
       isAdmin: [false]
     });
-
-    this.route.params.subscribe(params => {
-      if (params['username']) {
-        this.isEditMode = true;
-        this.username = params['username'];
-        this.apiService.getUser(this.username).subscribe(user => {
-          this.userForm.patchValue(user);
-        });
-      }
-    });
   }
 
   onSubmit() {
     if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
       return;
     }
 
@@ -54,12 +57,22 @@ export class UserFormComponent implements OnInit {
     if (this.isEditMode) {
       this.apiService.updateUser(this.username, user).subscribe(
         () => this.router.navigate(['/admin']),
-        error => console.error('Error updating user', error)
+        error => {
+          console.error('Error updating user', error);
+          if (error.status === 409) {
+            this.usernameExists = true;
+          }
+        }
       );
     } else {
       this.apiService.addUser(user).subscribe(
         () => this.router.navigate(['/admin']),
-        error => console.error('Error adding user', error)
+        error => {
+          console.error('Error adding user', error);
+          if (error.status === 409) {
+            this.usernameExists = true;
+          }
+        }
       );
     }
   }

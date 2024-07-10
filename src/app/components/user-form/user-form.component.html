@@ -4,26 +4,47 @@
     <div class="form-group">
       <label for="username">Username</label>
       <input [disabled]="isEditMode" class="form-control" formControlName="username" id="username" type="text">
+      <div *ngIf="userForm.controls['username'].invalid && (userForm.controls['username'].dirty || userForm.controls['username'].touched)" class="text-danger">
+        Username is required.
+      </div>
+      <div *ngIf="usernameExists" class="text-danger">
+        Username already exists.
+      </div>
     </div>
     <div class="form-group">
       <label for="password">Password</label>
       <input class="form-control" formControlName="password" id="password" type="password">
+      <div *ngIf="userForm.controls['password'].invalid && (userForm.controls['password'].dirty || userForm.controls['password'].touched)" class="text-danger">
+        Password is required.
+      </div>
     </div>
     <div class="form-group">
       <label for="name">Name</label>
       <input class="form-control" formControlName="name" id="name" type="text">
+      <div *ngIf="userForm.controls['name'].invalid && (userForm.controls['name'].dirty || userForm.controls['name'].touched)" class="text-danger">
+        Name is required.
+      </div>
     </div>
     <div class="form-group">
       <label for="surname">Surname</label>
       <input class="form-control" formControlName="surname" id="surname" type="text">
+      <div *ngIf="userForm.controls['surname'].invalid && (userForm.controls['surname'].dirty || userForm.controls['surname'].touched)" class="text-danger">
+        Surname is required.
+      </div>
     </div>
     <div class="form-group">
       <label for="birthdate">Birthdate</label>
       <input class="form-control" formControlName="birthdate" id="birthdate" type="date">
+      <div *ngIf="userForm.controls['birthdate'].invalid && (userForm.controls['birthdate'].dirty || userForm.controls['birthdate'].touched)" class="text-danger">
+        Birthdate is required.
+      </div>
     </div>
     <div class="form-group">
       <label for="email">Email</label>
       <input class="form-control" formControlName="email" id="email" type="email">
+      <div *ngIf="userForm.controls['email'].invalid && (userForm.controls['email'].dirty || userForm.controls['email'].touched)" class="text-danger">
+        Please enter a valid email address.
+      </div>
     </div>
     <div class="form-group">
       <label for="gender">Gender</label>
@@ -31,10 +52,16 @@
         <option value="Male">Male</option>
         <option value="Female">Female</option>
       </select>
+      <div *ngIf="userForm.controls['gender'].invalid && (userForm.controls['gender'].dirty || userForm.controls['gender'].touched)" class="text-danger">
+        Gender is required.
+      </div>
     </div>
     <div class="form-group">
       <label for="location">Location</label>
       <input class="form-control" formControlName="location" id="location" type="text">
+      <div *ngIf="userForm.controls['location'].invalid && (userForm.controls['location'].dirty || userForm.controls['location'].touched)" class="text-danger">
+        Location is required.
+      </div>
     </div>
     <div class="form-group form-check">
       <input class="form-check-input" formControlName="isAdmin" id="isAdmin" type="checkbox">

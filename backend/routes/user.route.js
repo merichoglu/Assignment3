@@ -74,7 +74,10 @@ userRoutes.route('/add').post(verifyToken, verifyAdmin, async (req, res) => {
     await user.save();
     res.status(200).json({ message: 'User added successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Adding new user failed' });
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'User already exists'})
+    }
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
