@@ -1,15 +1,45 @@
-<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-  <div class="form-group">
-    <label for="username">Username</label>
-    <input type="text" id="username" class="form-control" formControlName="username">
-  </div>
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input type="password" id="password" class="form-control" formControlName="password">
-  </div>
-  <div class="form-group">
-    <label for="email">Email</label>
-    <input type="email" id="email" class="form-control" formControlName="email">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="container">
+  <h2>{{ isEditMode ? 'Edit User' : 'Add User' }}</h2>
+  <form (ngSubmit)="onSubmit()" [formGroup]="userForm">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input [disabled]="isEditMode" class="form-control" formControlName="username" id="username" type="text">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input class="form-control" formControlName="password" id="password" type="password">
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input class="form-control" formControlName="name" id="name" type="text">
+    </div>
+    <div class="form-group">
+      <label for="surname">Surname</label>
+      <input class="form-control" formControlName="surname" id="surname" type="text">
+    </div>
+    <div class="form-group">
+      <label for="birthdate">Birthdate</label>
+      <input class="form-control" formControlName="birthdate" id="birthdate" type="date">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input class="form-control" formControlName="email" id="email" type="email">
+    </div>
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <select class="form-control" formControlName="gender" id="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input class="form-control" formControlName="location" id="location" type="text">
+    </div>
+    <div class="form-group form-check">
+      <input class="form-check-input" formControlName="isAdmin" id="isAdmin" type="checkbox">
+      <label class="form-check-label" for="isAdmin">Is Admin</label>
+    </div>
+    <button class="btn btn-primary" type="submit">{{ isEditMode ? 'Update' : 'Add' }} User</button>
+  </form>
+</div>

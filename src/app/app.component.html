@@ -3,11 +3,8 @@
     <button class="btn btn-sm btn-outline-success me-2" type="button" routerLinkActive="active" routerLink="/send">
       Send Message
     </button>
-    <button class="btn btn-sm btn-outline-secondary me-2" type="button" routerLinkActive="active" routerLink="/inbox">
-      Inbox
-    </button>
-    <button class="btn btn-sm btn-outline-secondary me-2" type="button" routerLinkActive="active" routerLink="/outbox">
-      Outbox
+    <button class="btn btn-sm btn-outline-secondary me-2" routerLink="/messages" routerLinkActive="active" type="button">
+      Messages
     </button>
     <button *ngIf="isAdmin" class="btn btn-sm btn-outline-secondary me-2" type="button" routerLinkActive="active" routerLink="/admin">
       User Panel

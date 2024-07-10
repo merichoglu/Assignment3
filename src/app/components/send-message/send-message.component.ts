@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { ApiService } from '../../service/api.service';
-import { Message } from '../../model/message';
-import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
+import {Component} from '@angular/core';
+import {ApiService} from '../../service/api.service';
+import {Message} from '../../model/message';
+import {Router} from '@angular/router';
+import {jwtDecode} from 'jwt-decode';
 
 @Component({
   selector: 'app-send-message',
@@ -25,18 +25,25 @@ export class SendMessageComponent {
     const token = localStorage.getItem('token');
     if (token) {
       const user = this.parseJwt(token);
-      this.message.senderUsername = user.username;
+      if (user && user.username) {
+        this.message.senderUsername = user.username;
 
-      this.apiService.sendMessage(this.message).subscribe(() => {
-        this.router.navigate(['/outbox']);
-      }, error => {
-        console.error('Error sending message', error);
-        if (error.status === 400 && error.error.error === 'Receiver not found') {
-          this.errorMessage = 'Receiver not found';
-        } else {
-          this.errorMessage = 'Error sending message';
-        }
-      });
+        // Send the message via the ApiService
+        this.apiService.sendMessage(this.message).subscribe(
+          () => {
+            this.router.navigate(['/messages']);
+          },
+          error => {
+            console.error('Error sending message', error);
+          }
+        );
+      } else {
+        console.error('Invalid user data from token');
+        this.router.navigate(['/login']);
+      }
+    } else {
+      console.error('No token found, redirecting to login');
+      this.router.navigate(['/login']);
     }
   }
 

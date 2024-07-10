@@ -40,18 +40,10 @@ messageRoutes.route('/').get(verifyToken, async (req, res) => {
 // Get inbox messages
 messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
-    const { sortBy = 'timestamp', sortDirection = 'asc', searchQuery = '' } = req.query;
-    const sort = {};
-    sort[sortBy] = sortDirection === 'asc' ? 1 : -1;
-    const query = {
-      receiverUsername: req.user.username,
-      $or: [
-        { senderUsername: { $regex: searchQuery, $options: 'i' } },
-        { title: { $regex: searchQuery, $options: 'i' } },
-        { content: { $regex: searchQuery, $options: 'i' } }
-      ]
-    };
-    const messages = await Message.find(query).sort(sort).exec();
+    const sortBy = req.query.sortBy || 'timestamp';
+    const order = req.query.order === 'asc' ? 1 : -1;
+    const sortCriteria = { [sortBy]: order };
+    const messages = await Message.find({ receiverUsername: req.user.username }).sort(sortCriteria).exec();
     res.json(messages);
   } catch (err) {
     console.log(err);
@@ -61,18 +53,10 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
 
 messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
   try {
-    const { sortBy = 'timestamp', sortDirection = 'asc', searchQuery = '' } = req.query;
-    const sort = {};
-    sort[sortBy] = sortDirection === 'asc' ? 1 : -1;
-    const query = {
-      senderUsername: req.user.username,
-      $or: [
-        { receiverUsername: { $regex: searchQuery, $options: 'i' } },
-        { title: { $regex: searchQuery, $options: 'i' } },
-        { content: { $regex: searchQuery, $options: 'i' } }
-      ]
-    };
-    const messages = await Message.find(query).sort(sort).exec();
+    const sortBy = req.query.sortBy || 'timestamp';
+    const order = req.query.order === 'asc' ? 1 : -1;
+    const sortCriteria = { [sortBy]: order };
+    const messages = await Message.find({ senderUsername: req.user.username }).sort(sortCriteria).exec();
     res.json(messages);
   } catch (err) {
     console.log(err);

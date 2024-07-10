@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../service/api.service';
-import { User } from '../../model/user';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ApiService} from '../../service/api.service';
+import {User} from '../../model/user';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-admin-panel',
@@ -11,23 +11,13 @@ import { Router } from '@angular/router';
 export class AdminPanelComponent implements OnInit {
   users: User[] = [];
   searchQuery: string = '';
-  sortBy: string = '';
+  filteredUsers: User[] = [];
+  sortBy: string = 'username';
   sortDirection: string = 'asc';
 
   constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
-    this.apiService.getUsers().subscribe(
-      users => {
-        this.users = users;
-      },
-      error => {
-        console.error('Error fetching users:', error);
-      }
-    );
-  }
-
-  searchUsers(): void {
     this.loadUsers();
   }
 
@@ -47,14 +37,10 @@ export class AdminPanelComponent implements OnInit {
   }
 
   loadUsers() {
-    this.apiService.getUsers(this.sortBy, this.sortDirection).subscribe(
-      (data: User[]) => {
-        this.users = data;
-      },
-      error => {
-        console.error('Error fetching users', error);
-      }
-    );
+    this.apiService.getUsers(this.sortBy, this.sortDirection).subscribe((data: User[]) => {
+      this.users = data;
+      this.filteredUsers = data;
+    });
   }
 
   sortUsers(field: string) {
@@ -65,5 +51,14 @@ export class AdminPanelComponent implements OnInit {
       this.sortDirection = 'asc';
     }
     this.loadUsers();
+  }
+
+  searchUsers() {
+    this.filteredUsers = this.users.filter(user =>
+      user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      user.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      user.surname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
   }
 }

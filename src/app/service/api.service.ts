@@ -51,7 +51,8 @@ export class ApiService {
   }
 
   getUser(username: string): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/users/${username}`, this.getAuthHeaders());
+    const headers = this.getAuthHeaders().headers;
+    return this.http.get<User>(`${this.baseUrl}/users/${username}`, { headers });
   }
 
   addUser(user: User): Observable<any> {
@@ -62,23 +63,16 @@ export class ApiService {
     return this.http.put(`${this.baseUrl}/users/update/${username}`, user, this.getAuthHeaders());
   }
 
-
   deleteUser(username: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/users/delete/${username}`, this.getAuthHeaders());
   }
 
-  getInbox(searchQuery: string = '', sortBy: string = 'timestamp', sortDirection: 'asc' | 'desc' = 'asc'): Observable<Message[]> {
-    return this.http.get<Message[]>(`${this.baseUrl}/messages/inbox`, {
-      params: { searchQuery, sortBy, sortDirection },
-      headers: this.getAuthHeaders().headers
-    });
+  getInbox(params: HttpParams): Observable<Message[]> {
+    return this.http.get<Message[]>(`${this.baseUrl}/messages/inbox`, { headers: this.getAuthHeaders().headers, params });
   }
 
-  getOutbox(searchQuery: string = '', sortBy: string = 'timestamp', sortDirection: 'asc' | 'desc' = 'asc'): Observable<Message[]> {
-    return this.http.get<Message[]>(`${this.baseUrl}/messages/outbox`, {
-      params: { searchQuery, sortBy, sortDirection },
-      headers: this.getAuthHeaders().headers
-    });
+  getOutbox(params: HttpParams): Observable<Message[]> {
+    return this.http.get<Message[]>(`${this.baseUrl}/messages/outbox`, { headers: this.getAuthHeaders().headers, params });
   }
 
   sendMessage(message: Message): Observable<any> {
