@@ -39,6 +39,7 @@ export class AdminPanelComponent implements OnInit {
       }
     );
   }
+
   protected readonly Math = Math;
 
   sortUsers(field: string) {
@@ -51,13 +52,13 @@ export class AdminPanelComponent implements OnInit {
     this.loadUsers();
   }
 
-  searchUsers() {
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.surname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+  loadUsers(): void {
+    this.apiService.getUsers(this.currentPage, 10, this.sortBy, this.sortDirection).subscribe(response => {
+      this.users = response.users;
+      this.totalPages = response.pages;
+      this.totalUsers = response.totalUsers;
+      this.searchUsers();
+    });
   }
 
   changePage(page: number): void {
@@ -67,12 +68,13 @@ export class AdminPanelComponent implements OnInit {
     }
   }
 
-  loadUsers(): void {
-    this.apiService.getUsers(this.currentPage, 10, this.sortBy, this.sortDirection).subscribe(response => {
-      this.users = response.users;
-      this.totalPages = response.pages;
-      this.totalUsers = response.totalUsers;
-      this.searchUsers();
-    });
+  searchUsers(): void {
+    const query = this.searchQuery.toLowerCase();
+    this.filteredUsers = this.users.filter(user =>
+      user.username.toLowerCase().includes(query) ||
+      user.name.toLowerCase().includes(query) ||
+      user.surname.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
+    );
   }
 }
