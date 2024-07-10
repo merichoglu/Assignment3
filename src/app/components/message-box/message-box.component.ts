@@ -77,7 +77,10 @@ export class MessageBoxComponent implements OnInit {
     });
   }
 
-  goToPage(page: number): void {
+  changePage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
     this.page = page;
     this.loadMessages();
   }

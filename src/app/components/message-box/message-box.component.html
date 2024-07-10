@@ -1,38 +1,43 @@
 <div class="container">
   <h2>{{ messageType === 'inbox' ? 'Inbox' : 'Outbox' }}</h2>
-  <div class="d-flex justify-content-between mb-3">
-    <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50" placeholder="Search Messages" type="text">
-    <div>
-      <button (click)="toggleMessageType('inbox')" class="btn btn-primary me-2">Inbox</button>
-      <button (click)="toggleMessageType('outbox')" class="btn btn-secondary">Outbox</button>
-    </div>
+  <div class="button-group">
+    <button (click)="toggleMessageType('inbox')" class="btn btn-secondary">Inbox</button>
+    <button (click)="toggleMessageType('outbox')" class="btn btn-secondary">Outbox</button>
   </div>
-  <table class="table table-hover">
+  <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50" placeholder="Search Messages" type="text">
+
+  <table class="table table-striped">
     <thead>
     <tr>
-      <th (click)="sortMessages('senderUsername')" *ngIf="messageType === 'inbox'">Sender Username <span *ngIf="sortColumn === 'senderUsername'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></th>
-      <th (click)="sortMessages('receiverUsername')" *ngIf="messageType === 'outbox'">Receiver Username <span *ngIf="sortColumn === 'receiverUsername'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></th>
-      <th (click)="sortMessages('timestamp')">Timestamp <span *ngIf="sortColumn === 'timestamp'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></th>
-      <th (click)="sortMessages('title')">Title <span *ngIf="sortColumn === 'title'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></th>
-      <th (click)="sortMessages('content')">Content <span *ngIf="sortColumn === 'content'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></th>
+      <th (click)="sortMessages('senderUsername')" *ngIf="messageType === 'inbox'">Sender Username <span *ngIf="sortColumn === 'senderUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('receiverUsername')" *ngIf="messageType === 'outbox'">Receiver Username <span *ngIf="sortColumn === 'receiverUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('title')">Title <span *ngIf="sortColumn === 'title'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('content')">Content <span *ngIf="sortColumn === 'content'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('timestamp')">Timestamp <span *ngIf="sortColumn === 'timestamp'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let message of filteredMessages">
       <td *ngIf="messageType === 'inbox'">{{ message.senderUsername }}</td>
       <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername }}</td>
-      <td>{{ message.timestamp | date: 'medium' }}</td>
       <td>{{ message.title }}</td>
       <td>{{ message.content }}</td>
+      <td>{{ message.timestamp | date:'medium' }}</td>
     </tr>
     </tbody>
   </table>
-  <div class="pagination">
-    <button (click)="goToPage(page - 1)" [disabled]="page === 1">Previous</button>
-    <button (click)="goToPage(i + 1)"
-            *ngFor="let page of [].constructor(totalPages); let i = index"
-            [class.active]="page === i + 1">{{ i + 1 }}</button>
-    <button (click)="goToPage(page + 1)" [disabled]="page === totalPages">Next</button>
-  </div>
 
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <li [class.disabled]="page === 1" class="page-item">
+        <a (click)="changePage(page - 1)" class="page-link">Previous</a>
+      </li>
+      <li *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="this.page === i + 1" class="page-item">
+        <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
+      </li>
+      <li [class.disabled]="page === totalPages" class="page-item">
+        <a (click)="changePage(page + 1)" class="page-link">Next</a>
+      </li>
+    </ul>
+  </nav>
 </div>
