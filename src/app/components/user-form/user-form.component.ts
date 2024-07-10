@@ -49,22 +49,24 @@ export class UserFormComponent implements OnInit {
 
   onSubmit() {
     if (this.userForm.invalid) {
-      this.userForm.markAllAsTouched();
       return;
     }
 
-    const user: User = this.userForm.getRawValue();
     if (this.isEditMode) {
-      this.apiService.updateUser(this.username, user).subscribe(
-        () => this.router.navigate(['/admin']),
-        error => {
-          console.error('Error updating user', error);
-          if (error.status === 409) {
-            this.usernameExists = true;
+      if (window.confirm('Are you sure you want to update this user?')) {
+        const user: User = this.userForm.getRawValue();
+        this.apiService.updateUser(this.username, user).subscribe(
+          () => this.router.navigate(['/admin']),
+          error => {
+            console.error('Error updating user', error);
+            if (error.status === 409) {
+              this.usernameExists = true;
+            }
           }
-        }
-      );
+        );
+      }
     } else {
+      const user: User = this.userForm.getRawValue();
       this.apiService.addUser(user).subscribe(
         () => this.router.navigate(['/admin']),
         error => {
