@@ -1,0 +1,22 @@
+<div class="container">
+  <h2>Outbox</h2>
+  <input type="text" class="form-control mb-3" placeholder="Search Outbox" [(ngModel)]="searchQuery" (input)="searchMessages()">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th (click)="sortMessages('receiverUsername')">Receiver Username</th>
+      <th (click)="sortMessages('timestamp')">Timestamp</th>
+      <th (click)="sortMessages('title')">Title</th>
+      <th (click)="sortMessages('content')">Content</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let message of messages">
+      <td>{{ message.receiverUsername }}</td>
+      <td>{{ message.timestamp | date: 'medium' }}</td>
+      <td>{{ message.title }}</td>
+      <td>{{ message.content }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,37 @@
+<div class="container">
+  <h2>Edit User: {{ username }}</h2>
+  <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" class="form-control" formControlName="name">
+    </div>
+    <div class="form-group">
+      <label for="surname">Surname</label>
+      <input type="text" id="surname" class="form-control" formControlName="surname">
+    </div>
+    <div class="form-group">
+      <label for="birthdate">Birthdate</label>
+      <input type="date" id="birthdate" class="form-control" formControlName="birthdate">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" class="form-control" formControlName="email">
+    </div>
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <select id="gender" class="form-control" formControlName="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input type="text" id="location" class="form-control" formControlName="location">
+    </div>
+    <div class="form-group form-check">
+      <input type="checkbox" id="isAdmin" class="form-check-input" formControlName="isAdmin">
+      <label class="form-check-label" for="isAdmin">Is Admin</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Update User</button>
+  </form>
+</div>
