@@ -8,9 +8,9 @@ import {ApiService} from '../../service/api.service';
 })
 export class AccessLogsComponent implements OnInit {
   accessLogs: any[] = [];
-  selectedUserLogs: any[] = [];
   selectedUser: string | null = null;
-  sortColumn: string = 'loginTime';
+  selectedUserLogs: any[] = [];
+  sortColumn: string = 'accessLogs.loginTime';
   sortOrder: string = 'asc';
 
   constructor(private apiService: ApiService) {}
@@ -19,32 +19,30 @@ export class AccessLogsComponent implements OnInit {
     this.loadAccessLogs();
   }
 
-  loadAccessLogs(sortBy = this.sortColumn, order = this.sortOrder): void {
-    this.apiService.getAccessLogs(sortBy, order).subscribe(
-      (logs: any[]) => {
-        this.accessLogs = logs;
-        if (this.accessLogs.length > 0) {
-          this.selectUser(this.accessLogs[0].username); // Default select the first user
-        }
-      },
-      error => console.error('Error fetching access logs', error)
-    );
+  loadAccessLogs(): void {
+    this.apiService.getAccessLogs(this.sortColumn, this.sortOrder).subscribe((users: any[]) => {
+      this.accessLogs = users;
+      if (this.accessLogs.length > 0) {
+        this.selectUser(this.selectedUser || this.accessLogs[0].username);
+      }
+    });
   }
 
   selectUser(username: string): void {
     this.selectedUser = username;
-    const userLogs = this.accessLogs.find(user => user.username === username);
-    this.selectedUserLogs = userLogs ? userLogs.accessLogs : [];
+    this.updateSelectedUserLogs();
+  }
+
+  updateSelectedUserLogs(): void {
+    if (this.selectedUser) {
+      const user = this.accessLogs.find(u => u.username === this.selectedUser);
+      this.selectedUserLogs = user ? user.accessLogs : [];
+    }
   }
 
   sortLogs(column: string): void {
-    if (this.sortColumn === column) {
-      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = column;
-      this.sortOrder = 'asc';
-    }
-
-    this.loadAccessLogs(this.sortColumn, this.sortOrder);
+    this.sortColumn = column;
+    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    this.loadAccessLogs(); // Reload logs with new sorting
   }
 }
