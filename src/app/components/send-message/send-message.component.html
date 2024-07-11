@@ -3,7 +3,7 @@
   <form (ngSubmit)="sendMessage()">
     <div class="form-group">
       <label for="receiverUsername">Receiver Username</label>
-      <input (selectItem)="onSelect($event)" [(ngModel)]="message.receiverUsername" [ngbTypeahead]="search" class="form-control" id="receiverUsername" name="receiverUsername" required>
+      <input [(ngModel)]="message.receiverUsername" [ngbTypeahead]="search" class="form-control" id="receiverUsername" name="receiverUsername" required type="text">
     </div>
     <div class="form-group">
       <label for="title">Title</label>

@@ -11,20 +11,26 @@ let User = require("../models/User");
 // Create a new message
 messageRoutes.route('/send').post(verifyToken, async (req, res) => {
   try {
-    const { receiverUsername } = req.body;
-    // Check if receiver exists
+    const { receiverUsername, title, content } = req.body;
+
+    if (!receiverUsername || !title || !content) {
+      return res.status(400).json({ error: 'Receiver, title, and content are required' });
+    }
+
     const receiver = await User.findOne({ username: receiverUsername });
+
     if (!receiver) {
-      return res.status(400).json({ error: 'Receiver not found' });
+      return res.status(409).json({ error: 'Receiver not found' });
     }
 
     let message = new Message(req.body);
     await message.save();
-    res.status(200).json({ 'message': 'Message sent successfully' });
+    res.status(200).json({ message: 'Message sent successfully' });
   } catch (err) {
-    res.status(400).send('Error sending message');
+    res.status(409).send('Receiver not found.');
   }
 });
+
 
 // Get all messages (for debugging purpose)
 messageRoutes.route('/').get(verifyToken, async (req, res) => {

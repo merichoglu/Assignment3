@@ -71,6 +71,16 @@ userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// Typeahead route to get user list, no admin privilege
+userRoutes.get('/typeahead', verifyToken, async (req, res) => {
+  try {
+    const users = await User.find({}, 'username').limit(10).exec();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get user by username
 userRoutes.route('/:username').get(verifyToken, async (req, res) => {
   const username = req.params.username;

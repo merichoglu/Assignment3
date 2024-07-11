@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../service/api.service';
-import {Message} from '../../model/message';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {jwtDecode} from 'jwt-decode';
-import {map, Observable} from "rxjs";
-import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
-import {User} from "../../model/user";
 
 @Component({
   selector: 'app-send-message',
@@ -13,7 +10,7 @@ import {User} from "../../model/user";
   styleUrls: ['./send-message.component.scss']
 })
 export class SendMessageComponent implements OnInit {
-  message: Message = {
+  message: any = {
     senderUsername: '',
     receiverUsername: '',
     timestamp: new Date(),
@@ -30,63 +27,69 @@ export class SendMessageComponent implements OnInit {
   }
 
   loadUserList(): void {
-    this.apiService.getAllUsersForTypeAhead().subscribe({
-      next: (response: { users: User[] }) => {
-        if (Array.isArray(response.users)) {
-          this.userList = response.users.map(user => user.username);
+    this.apiService.getTypeaheadUsers().subscribe({
+      next: (users: any[]) => {
+        if (Array.isArray(users)) {
+          this.userList = users.map(user => user.username);
         } else {
           this.userList = [];
         }
       },
       error: (err) => {
-        console.error('Error loading user list:', err);
-        this.userList = [];
+        this.errorMessage = 'Error loading user list';
       }
     });
   }
 
   search = (text$: Observable<string>) =>
     text$.pipe(
-      map(term => term.length < 2 ? []
+      map(term => term.length < 1 ? []
         : this.userList.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     );
 
-  sendMessage(): void {
+  sendMessage() {
+    if (!this.message.receiverUsername || !this.message.title || !this.message.content) {
+      this.errorMessage = 'Receiver, title, and content cannot be empty';
+      return;
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       const user = this.parseJwt(token);
       if (user && user.username) {
         this.message.senderUsername = user.username;
 
-        // Send the message via the ApiService
         this.apiService.sendMessage(this.message).subscribe(
           () => {
             this.router.navigate(['/messages']);
           },
           error => {
-            console.error('Error sending message', error);
+            if (error.status === 409) {
+              this.errorMessage = 'Receiver not found'
+            } else {
+              this.errorMessage = 'Error sending message';
+            }
           }
         );
       } else {
-        console.error('Invalid user data from token');
+        this.errorMessage = 'Invalid user data from token';
         this.router.navigate(['/login']);
       }
     } else {
-      console.error('No token found, redirecting to login');
+      this.errorMessage = 'No token found, redirecting to login';
       this.router.navigate(['/login']);
     }
   }
 
   parseJwt(token: string): any {
     try {
-      return jwtDecode(token);
+      return JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
-      console.error('Error decoding token', e);
       return null;
     }
   }
 
-  onSelect(event: NgbTypeaheadSelectItemEvent): void {
+  onSelect(event: any): void {
     this.message.receiverUsername = event.item;
   }
 }
