@@ -10,6 +10,7 @@ import {ApiService} from '../../service/api.service';
 export class LoginComponent {
   username: string;
   password: string;
+  errorMessage: string = '';
 
   constructor(private apiService: ApiService, private router: Router) {}
 
@@ -25,7 +26,7 @@ export class LoginComponent {
         }
       },
       err => {
-        alert('Login failed');
+        this.errorMessage = 'Invalid username or password';
       }
     );
   }
