@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { generateToken, verifyToken} = require('../utils/jwtUtil');
 const User = require('../models/User');
+const Blacklist = require('../models/Blacklist');
 const requestIp = require('request-ip');
 const useragent = require('useragent');
+const {decode} = require("jsonwebtoken");
 
 // Login route
 router.post('/login', async (req, res) => {
@@ -57,10 +59,17 @@ router.post('/logout', verifyToken, async (req, res) => {
       latestLog.logoutTime = new Date();
     }
 
+    // Blacklist the token
+    const token = req.headers['authorization'].split(' ')[1];
+    const decoded = decode(token);
+    const expiry = new Date(decoded.exp * 1000);
+    await Blacklist.create({ token, expiry });
+
     await user.save();
 
     res.json({ message: 'Logout successful' });
   } catch (err) {
+    console.error('Error logging out: ', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
