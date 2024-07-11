@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiService } from '../../service/api.service';
+import {Component} from '@angular/core';
+import {Router} from '@angular/router';
+import {ApiService} from '../../service/api.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +21,7 @@ export class LoginComponent {
         if (user.isAdmin) {
           this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/inbox']);
+          this.router.navigate(['/messages']);
         }
       },
       err => {
