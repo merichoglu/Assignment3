@@ -7,25 +7,20 @@ import {ApiService} from '../../service/api.service';
   styleUrls: ['./access-logs.component.scss']
 })
 export class AccessLogsComponent implements OnInit {
-  accessLogs: any[] = [];
+  users: any[] = [];
   selectedUser: string | null = null;
   selectedUserLogs: any[] = [];
-  sortColumn: string = 'accessLogs.loginTime';
-  sortOrder: string = 'asc';
+  sortBy: string = 'accessLogs.loginTime';
+  sortDirection: string = 'asc';
+  page: number = 1;
+  limit: number = 10;
+  totalLogs: number = 0;
 
   constructor(private apiService: ApiService) {}
+  protected readonly Math = Math;
 
   ngOnInit(): void {
-    this.loadAccessLogs();
-  }
-
-  loadAccessLogs(): void {
-    this.apiService.getAccessLogs(this.sortColumn, this.sortOrder).subscribe((users: any[]) => {
-      this.accessLogs = users;
-      if (this.accessLogs.length > 0) {
-        this.selectUser(this.selectedUser || this.accessLogs[0].username);
-      }
-    });
+    this.loadLogs();
   }
 
   selectUser(username: string): void {
@@ -33,16 +28,33 @@ export class AccessLogsComponent implements OnInit {
     this.updateSelectedUserLogs();
   }
 
+  loadLogs(): void {
+    this.apiService.getAccessLogs(this.sortBy, this.sortDirection, this.page, this.limit).subscribe((data: any) => {
+      this.users = data.users;
+      this.totalLogs = data.totalLogs;
+      if (this.users.length > 0 && !this.selectedUser) {
+        this.selectUser(this.users[0].username);
+      }
+    });
+  }
+
   updateSelectedUserLogs(): void {
     if (this.selectedUser) {
-      const user = this.accessLogs.find(u => u.username === this.selectedUser);
+      const user = this.users.find(u => u.username === this.selectedUser);
       this.selectedUserLogs = user ? user.accessLogs : [];
     }
   }
 
   sortLogs(column: string): void {
-    this.sortColumn = column;
-    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-    this.loadAccessLogs(); // Reload logs with new sorting
+    this.sortBy = column;
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.loadLogs(); // Reload logs with new sorting
+  }
+
+  changePage(newPage: number): void {
+    if (newPage >= 1 && newPage <= Math.ceil(this.totalLogs / this.limit)) {
+      this.page = newPage;
+      this.loadLogs(); // Reload logs with new page
+    }
   }
 }

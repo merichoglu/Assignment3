@@ -8,6 +8,9 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'accessLogs.loginTime';
     const order = req.query.order === 'asc' ? 1 : -1;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
     const users = await User.aggregate([
       { $unwind: "$accessLogs" },
@@ -22,10 +25,17 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
           username: { $first: "$username" },
           accessLogs: { $push: "$accessLogs" }
         }
-      }
+      },
+      { $skip: skip },
+      { $limit: limit }
     ]);
 
-    res.json(users);
+    const totalLogs = await User.aggregate([
+      { $unwind: "$accessLogs" },
+      { $count: "total" }
+    ]);
+
+    res.json({ users, totalLogs: totalLogs[0] ? totalLogs[0].total : 0 });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
