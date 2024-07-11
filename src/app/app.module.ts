@@ -4,7 +4,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 // components
 import {LoginComponent} from './components/login/login.component';
 import {AdminPanelComponent} from './components/admin-panel/admin-panel.component';
@@ -13,6 +13,7 @@ import {UserFormComponent} from "./components/user-form/user-form.component";
 import {MessageBoxComponent} from './components/message-box/message-box.component';
 import {NgbTypeahead} from "@ng-bootstrap/ng-bootstrap";
 import {AccessLogsComponent} from "./components/access-logs/access-logs.component";
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -30,9 +31,12 @@ import {AccessLogsComponent} from "./components/access-logs/access-logs.componen
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbTypeahead
+    NgbTypeahead,
+    MatSnackBarModule
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

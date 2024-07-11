@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../service/api.service';
 import {User} from '../../model/user';
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-user-form',
@@ -19,7 +20,8 @@ export class UserFormComponent implements OnInit {
     private fb: FormBuilder,
     private apiService: ApiService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +51,7 @@ export class UserFormComponent implements OnInit {
 
   onSubmit() {
     if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
       return;
     }
 
@@ -56,7 +59,10 @@ export class UserFormComponent implements OnInit {
       if (window.confirm('Are you sure you want to update this user?')) {
         const user: User = this.userForm.getRawValue();
         this.apiService.updateUser(this.username, user).subscribe(
-          () => this.router.navigate(['/admin']),
+          () => {
+            this.snackBar.open('User updated successfully', 'Close', { duration: 3000 });
+            this.router.navigate(['/admin']);
+          },
           error => {
             console.error('Error updating user', error);
             if (error.status === 409) {
@@ -68,7 +74,10 @@ export class UserFormComponent implements OnInit {
     } else {
       const user: User = this.userForm.getRawValue();
       this.apiService.addUser(user).subscribe(
-        () => this.router.navigate(['/admin']),
+        () => {
+          this.snackBar.open('User added successfully', 'Close', { duration: 3000 });
+          this.router.navigate(['/admin']);
+        },
         error => {
           console.error('Error adding user', error);
           if (error.status === 409) {
