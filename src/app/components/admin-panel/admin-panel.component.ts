@@ -34,6 +34,7 @@ export class AdminPanelComponent implements OnInit {
       this.apiService.deleteUser(username).subscribe(
         () => {
           this.users = this.users.filter(user => user.username !== username);
+          this.searchUsers();
           this.loadUsers();
         },
         error => {
