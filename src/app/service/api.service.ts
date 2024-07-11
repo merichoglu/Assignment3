@@ -16,7 +16,7 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/login`, { username, password }).pipe(
+    return this.http.post<any>(`${this.baseUrl}/auth/login`, { username, password }).pipe(
       tap(response => {
         if (response && response.token) {
           const decodedToken: any = jwtDecode(response.token);
@@ -37,6 +37,14 @@ export class ApiService {
         }
       })
     );
+  }
+
+  logout(): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}, { headers });
   }
 
   getUsers(page: number, limit: number, sortBy: string, order: string): Observable<any> {
@@ -89,6 +97,13 @@ export class ApiService {
         return of({ users: [] });
       })
     );
+  }
+
+  getAccessLogs(): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    });
+    return this.http.get<any>(`${this.baseUrl}/users/access-logs`, { headers });
   }
 
   private getAuthHeaders() {

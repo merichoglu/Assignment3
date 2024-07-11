@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {NavigationEnd, Router} from '@angular/router';
+import {ApiService} from "./service/api.service";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent implements OnInit {
   currentRoute: string = '';
   title: string = 'mean-stack-crud-app';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private apiService: ApiService) {
     // Listen to route changes to update the current route
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -33,9 +34,16 @@ export class AppComponent implements OnInit {
     return this.currentRoute === '/login';
   }
 
-  logOut() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAdmin');
-    this.router.navigate(['/login']);
+  logOut(): void {
+    this.apiService.logout().subscribe(
+      () => {
+        localStorage.removeItem('token');
+        this.router.navigate(['/login']);
+      },
+      error => {
+        console.error('Error logging out', error);
+      }
+    );
   }
+
 }

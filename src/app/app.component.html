@@ -12,6 +12,9 @@
     <button *ngIf="isAdmin" class="btn btn-sm btn-outline-primary me-2" type="button" routerLinkActive="active" routerLink="/add-user">
       Add User
     </button>
+    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-info me-2" routerLink="/access-logs" routerLinkActive="active" type="button">
+      Logs
+    </button>
     <button class="btn btn-sm btn-outline-danger" type="button" (click)="logOut()">
       Log Out
     </button>

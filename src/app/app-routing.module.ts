@@ -7,6 +7,7 @@ import {LoginComponent} from './components/login/login.component';
 import {UserFormComponent} from './components/user-form/user-form.component';
 import {AuthGuard} from './guards/auth.guard';
 import {AdminGuard} from './guards/admin.guard';
+import {AccessLogsComponent} from "./components/access-logs/access-logs.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'messages', component: MessageBoxComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminPanelComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'add-user', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'edit-user/:username', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard] }, // Ensure this line is present
+  { path: 'access-logs', component: AccessLogsComponent, canActivate: [AuthGuard, AdminGuard]},
+  { path: 'edit-user/:username', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: '**', redirectTo: 'login' }
 ];
 

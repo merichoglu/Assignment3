@@ -3,17 +3,11 @@ const userRoutes = express.Router();
 const { verifyToken, verifyAdmin } = require('../utils/jwtUtil');
 const User = require('../models/User');
 
-// Log user access
-userRoutes.route('/logAccess').post(verifyToken, async (req, res) => {
+// Get user access logs
+userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { username, loginTime, logoutTime, ip, browser } = req.body;
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    user.accessLogs.push({ loginTime, logoutTime, ip, browser });
-    await user.save();
-    res.json({ message: 'Access log updated' });
+    const users = await User.find({}, 'username accessLogs');
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

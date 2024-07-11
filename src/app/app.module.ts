@@ -12,6 +12,7 @@ import {SendMessageComponent} from './components/send-message/send-message.compo
 import {UserFormComponent} from "./components/user-form/user-form.component";
 import {MessageBoxComponent} from './components/message-box/message-box.component';
 import {NgbTypeahead} from "@ng-bootstrap/ng-bootstrap";
+import {AccessLogsComponent} from "./components/access-logs/access-logs.component";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {NgbTypeahead} from "@ng-bootstrap/ng-bootstrap";
     AdminPanelComponent,
     SendMessageComponent,
     UserFormComponent,
-    MessageBoxComponent
+    MessageBoxComponent,
+    AccessLogsComponent
   ],
   imports: [
     BrowserModule,
