@@ -1,14 +1,11 @@
 <div class="container">
-  <h2>{{ messageType === 'inbox' ? 'Inbox' : 'Outbox' }}</h2>
-  <div class="message-count">
-    Total {{ messageType }} messages: {{ totalMessages }}
+  <h2>Messages</h2>
+  <div class="button-group mb-3">
+    <button (click)="toggleMessageType('inbox')" [class.active]="messageType === 'inbox'" class="btn btn-secondary">Inbox</button>
+    <button (click)="toggleMessageType('outbox')" [class.active]="messageType === 'outbox'" class="btn btn-secondary">Outbox</button>
   </div>
-  <div class="button-group">
-    <button (click)="toggleMessageType('inbox')" class="btn btn-secondary">Inbox</button>
-    <button (click)="toggleMessageType('outbox')" class="btn btn-secondary">Outbox</button>
-  </div>
-  <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50" placeholder="Search Messages" type="text">
-
+  <div>Total {{ messageType }} messages: {{ totalMessages }}</div>
+  <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50 mb-3" placeholder="Search Messages" type="text">
   <table class="table table-striped">
     <thead>
     <tr>
@@ -20,7 +17,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let message of filteredMessages">
+    <tr *ngFor="let message of messages">
       <td *ngIf="messageType === 'inbox'">{{ message.senderUsername }}</td>
       <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername }}</td>
       <td>{{ message.title }}</td>
@@ -29,13 +26,12 @@
     </tr>
     </tbody>
   </table>
-
   <nav aria-label="Page navigation">
     <ul class="pagination">
       <li [class.disabled]="page === 1" class="page-item">
         <a (click)="changePage(page - 1)" class="page-link">Previous</a>
       </li>
-      <li *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="this.page === i + 1" class="page-item">
+      <li *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="page === i + 1" class="page-item">
         <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
       </li>
       <li [class.disabled]="page === totalPages" class="page-item">

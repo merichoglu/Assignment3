@@ -41,17 +41,25 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
     const order = req.query.order === 'asc' ? 1 : -1;
-    const sortCriteria = { [sortBy]: order };
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const messages = await Message.find({ receiverUsername: req.user.username })
-      .sort(sortCriteria)
-      .skip(skip)
+    const query = { receiverUsername: req.user.username };
+    if (searchQuery) {
+      query.$or = [
+        { senderUsername: new RegExp(searchQuery, 'i') },
+        { title: new RegExp(searchQuery, 'i') },
+        { content: new RegExp(searchQuery, 'i') }
+      ];
+    }
+
+    const messages = await Message.find(query)
+      .sort({ [sortBy]: order })
+      .skip((page - 1) * limit)
       .limit(limit)
       .exec();
-    const totalMessages = await Message.countDocuments({ receiverUsername: req.user.username });
+    const totalMessages = await Message.countDocuments(query);
 
     res.json({ messages, totalMessages });
   } catch (err) {
@@ -65,17 +73,25 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
     const order = req.query.order === 'asc' ? 1 : -1;
-    const sortCriteria = { [sortBy]: order };
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const messages = await Message.find({ senderUsername: req.user.username })
-      .sort(sortCriteria)
-      .skip(skip)
+    const query = { senderUsername: req.user.username };
+    if (searchQuery) {
+      query.$or = [
+        { receiverUsername: new RegExp(searchQuery, 'i') },
+        { title: new RegExp(searchQuery, 'i') },
+        { content: new RegExp(searchQuery, 'i') }
+      ];
+    }
+
+    const messages = await Message.find(query)
+      .sort({ [sortBy]: order })
+      .skip((page - 1) * limit)
       .limit(limit)
       .exec();
-    const totalMessages = await Message.countDocuments({ senderUsername: req.user.username });
+    const totalMessages = await Message.countDocuments(query);
 
     res.json({ messages, totalMessages });
   } catch (err) {

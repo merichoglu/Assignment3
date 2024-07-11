@@ -10,10 +10,9 @@ import {HttpParams} from '@angular/common/http';
 })
 export class MessageBoxComponent implements OnInit {
   messages: Message[] = [];
-  filteredMessages: Message[] = [];
   searchQuery: string = '';
   messageType: 'inbox' | 'outbox' = 'inbox';
-  sortColumn: string = '';
+  sortColumn: string = 'timestamp';
   sortOrder: 'asc' | 'desc' = 'asc';
   page: number = 1;
   limit: number = 10;
@@ -35,20 +34,6 @@ export class MessageBoxComponent implements OnInit {
     this.loadMessages();
   }
 
-  filterMessages(): void {
-    const query = this.searchQuery.toLowerCase();
-    this.filteredMessages = this.messages.filter(message => {
-      const fieldsToSearch = this.messageType === 'inbox'
-        ? [message.senderUsername, message.title, message.content]
-        : [message.receiverUsername, message.title, message.content];
-      return fieldsToSearch.some(field => field.toLowerCase().includes(query));
-    });
-  }
-
-  searchMessages(): void {
-    this.filterMessages();
-  }
-
   sortMessages(column: string): void {
     if (this.sortColumn === column) {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
@@ -59,12 +44,18 @@ export class MessageBoxComponent implements OnInit {
     this.loadMessages();
   }
 
+  searchMessages(): void {
+    this.page = 1;  // reset to page 1 when searching
+    this.loadMessages();
+  }
+
   loadMessages(): void {
     let params = new HttpParams()
       .set('sortBy', this.sortColumn)
       .set('order', this.sortOrder)
-      .set('page', this.page)
-      .set('limit', this.limit);
+      .set('page', this.page.toString())
+      .set('limit', this.limit.toString())
+      .set('searchQuery', this.searchQuery);
 
     const messageObservable = this.messageType === 'inbox'
       ? this.apiService.getInbox(params)
@@ -73,7 +64,6 @@ export class MessageBoxComponent implements OnInit {
     messageObservable.subscribe((response: { messages: Message[], totalMessages: number }) => {
       this.messages = response.messages;
       this.totalMessages = response.totalMessages;
-      this.filterMessages();
     });
   }
 
