@@ -55,6 +55,7 @@ userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
       .sort(sortCriteria)
       .skip((page - 1) * limit)
       .limit(limit)
+      .select('username name surname email gender location')
       .exec();
 
     const totalUsers = await User.countDocuments().exec();

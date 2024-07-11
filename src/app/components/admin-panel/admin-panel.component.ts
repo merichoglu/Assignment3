@@ -78,7 +78,9 @@ export class AdminPanelComponent implements OnInit {
       user.username.toLowerCase().includes(query) ||
       user.name.toLowerCase().includes(query) ||
       user.surname.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query)
+      user.email.toLowerCase().includes(query) ||
+      user.gender.toLowerCase().includes(query) ||
+      user.location.toLowerCase().includes(query)
     );
   }
 }
