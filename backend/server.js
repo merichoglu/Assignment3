@@ -16,7 +16,7 @@ mongoose.connection.once('open', () => {
   console.log('MongoDB database connection established successfully');
 });
 
-app.use('/auth', authRoutes); // Register authRoutes
+app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 

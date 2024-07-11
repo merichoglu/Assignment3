@@ -6,7 +6,25 @@ const User = require('../models/User');
 // Get user access logs
 userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const users = await User.find({}, 'username accessLogs');
+    const sortBy = req.query.sortBy || 'accessLogs.loginTime';
+    const order = req.query.order === 'asc' ? 1 : -1;
+
+    const users = await User.aggregate([
+      { $unwind: "$accessLogs" },
+      {
+        $sort: {
+          [sortBy]: order
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          username: { $first: "$username" },
+          accessLogs: { $push: "$accessLogs" }
+        }
+      }
+    ]);
+
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });

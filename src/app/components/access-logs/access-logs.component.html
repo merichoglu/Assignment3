@@ -1,0 +1,37 @@
+<div class="container">
+  <h2>User Access Logs</h2>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div *ngIf="selectedUser"><h3>Logs for {{ selectedUser }}</h3></div>
+    <div class="dropdown">
+      <button aria-expanded="false" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" id="userDropdown" type="button">
+        Select User
+      </button>
+      <ul aria-labelledby="userDropdown" class="dropdown-menu">
+        <li *ngFor="let user of accessLogs">
+          <a (click)="selectUser(user.username)" class="dropdown-item">{{ user.username }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+      <th (click)="sortLogs('accessLogs.loginTime')">Login Time <span *ngIf="sortColumn === 'accessLogs.loginTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.logoutTime')">Logout Time <span *ngIf="sortColumn === 'accessLogs.logoutTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.ip')">IP <span *ngIf="sortColumn === 'accessLogs.ip'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.browser')">Browser <span *ngIf="sortColumn === 'accessLogs.browser'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let log of selectedUserLogs">
+      <td>{{ log.loginTime | date:'medium' }}</td>
+      <td>{{ log.logoutTime ? (log.logoutTime | date:'medium') : '-' }}</td>
+      <td>{{ log.ip }}</td>
+      <td>{{ log.browser }}</td>
+    </tr>
+    <tr *ngIf="!selectedUserLogs || selectedUserLogs.length === 0">
+      <td class="text-center" colspan="4">No logs available</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

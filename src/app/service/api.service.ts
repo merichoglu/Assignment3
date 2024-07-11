@@ -99,11 +99,14 @@ export class ApiService {
     );
   }
 
-  getAccessLogs(): Observable<any> {
+  getAccessLogs(sortBy: string, order: string): Observable<any> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('token')}`
     });
-    return this.http.get<any>(`${this.baseUrl}/users/access-logs`, { headers });
+
+    let params = new HttpParams().set('sortBy', sortBy).set('order', order);
+
+    return this.http.get<any>(`${this.baseUrl}/users/access-logs`, { headers, params });
   }
 
   private getAuthHeaders() {
