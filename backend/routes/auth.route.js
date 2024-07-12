@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
       loginTime: new Date(),
       ip: clientIp,
       browser: agent.toString(),
-      logoutTime: new Date()
+      logoutTime: ''
     };
     user.accessLogs.push(log);
     await user.save();
