@@ -35,7 +35,8 @@ router.post('/login', async (req, res) => {
     const log = {
       loginTime: new Date(),
       ip: clientIp,
-      browser: agent.toString()
+      browser: agent.toString(),
+      logoutTime: new Date()
     };
     user.accessLogs.push(log);
     await user.save();

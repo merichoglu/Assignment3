@@ -7,54 +7,50 @@ import {ApiService} from '../../service/api.service';
   styleUrls: ['./access-logs.component.scss']
 })
 export class AccessLogsComponent implements OnInit {
-  users: any[] = [];
-  selectedUser: string | null = null;
-  selectedUserLogs: any[] = [];
+  accessLogs: any[] = [];
+  totalLogs: number = 0;
   sortBy: string = 'accessLogs.loginTime';
-  sortDirection: string = 'asc';
+  sortOrder: string = 'asc';
   page: number = 1;
   limit: number = 10;
-  totalLogs: number = 0;
+  filter: string = '';
 
   constructor(private apiService: ApiService) {}
   protected readonly Math = Math;
 
   ngOnInit(): void {
-    this.loadLogs();
+    this.loadAccessLogs();
   }
 
-  selectUser(username: string): void {
-    this.selectedUser = username;
-    this.updateSelectedUserLogs();
-  }
-
-  loadLogs(): void {
-    this.apiService.getAccessLogs(this.sortBy, this.sortDirection, this.page, this.limit).subscribe((data: any) => {
-      this.users = data.users;
-      this.totalLogs = data.totalLogs;
-      if (this.users.length > 0 && !this.selectedUser) {
-        this.selectUser(this.users[0].username);
-      }
-    });
-  }
-
-  updateSelectedUserLogs(): void {
-    if (this.selectedUser) {
-      const user = this.users.find(u => u.username === this.selectedUser);
-      this.selectedUserLogs = user ? user.accessLogs : [];
-    }
+  loadAccessLogs(): void {
+    this.apiService.getAccessLogs(this.sortBy, this.sortOrder, this.page, this.limit, this.filter).subscribe(
+      (response: { users: any[], totalLogs: number }) => {
+        this.accessLogs = response.users.flatMap(user => user.accessLogs.map(log => ({ ...log, username: user.username })));
+        this.totalLogs = response.totalLogs;
+      },
+      error => console.error('Error fetching access logs', error)
+    );
   }
 
   sortLogs(column: string): void {
-    this.sortBy = column;
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    this.loadLogs(); // Reload logs with new sorting
+    if (this.sortBy === column) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortOrder = 'asc';
+    }
+    this.loadAccessLogs();
   }
 
-  changePage(newPage: number): void {
-    if (newPage >= 1 && newPage <= Math.ceil(this.totalLogs / this.limit)) {
-      this.page = newPage;
-      this.loadLogs(); // Reload logs with new page
+  changePage(page: number): void {
+    if (page > 0 && page <= Math.ceil(this.totalLogs / this.limit)) {
+      this.page = page;
+      this.loadAccessLogs();
     }
+  }
+
+  applyFilter(): void {
+    this.page = 1;
+    this.loadAccessLogs();
   }
 }

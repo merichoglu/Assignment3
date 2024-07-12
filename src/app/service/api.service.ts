@@ -95,7 +95,7 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/users/typeahead`, this.getAuthHeaders());
   }
 
-  getAccessLogs(sortBy: string, order: string, page: number, limit: number): Observable<any> {
+  getAccessLogs(sortBy: string, order: string, page: number, limit: number, filter: string): Observable<any> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('token')}`
     });
@@ -104,7 +104,8 @@ export class ApiService {
       .set('sortBy', sortBy)
       .set('order', order)
       .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('limit', limit.toString())
+      .set('filter', filter);
 
     return this.http.get<any>(`${this.baseUrl}/users/access-logs`, { headers, params });
   }

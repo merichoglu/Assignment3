@@ -3,7 +3,7 @@ const userRoutes = express.Router();
 const { verifyToken, verifyAdmin } = require('../utils/jwtUtil');
 const User = require('../models/User');
 
-// Get user access logs
+// Get user access logs with sorting and pagination
 userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'accessLogs.loginTime';
@@ -11,14 +11,28 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const filter = req.query.filter || '';
 
-    const users = await User.aggregate([
+    const matchStage = filter ? {
+      $match: {
+        $or: [
+          { "username": { $regex: filter, $options: 'i' } },
+          { "accessLogs.ip": { $regex: filter, $options: 'i' } },
+          { "accessLogs.browser": { $regex: filter, $options: 'i' } }
+        ]
+      }
+    } : {};
+
+    const pipeline = [
       { $unwind: "$accessLogs" },
+      ...(filter ? [matchStage] : []),
       {
         $sort: {
           [sortBy]: order
         }
       },
+      { $skip: skip },
+      { $limit: limit },
       {
         $group: {
           _id: "$_id",
@@ -26,17 +40,25 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
           accessLogs: { $push: "$accessLogs" }
         }
       },
-      { $skip: skip },
-      { $limit: limit }
-    ]);
+      {
+        $sort: {
+          [sortBy]: order
+        }
+      }
+    ];
 
-    const totalLogs = await User.aggregate([
+    const users = await User.aggregate(pipeline);
+
+    const totalLogsPipeline = [
       { $unwind: "$accessLogs" },
+      ...(filter ? [matchStage] : []),
       { $count: "total" }
-    ]);
+    ];
+    const totalLogs = await User.aggregate(totalLogsPipeline);
 
     res.json({ users, totalLogs: totalLogs[0] ? totalLogs[0].total : 0 });
   } catch (err) {
+    console.error("Error fetching access logs:", err);
     res.status(500).json({ message: 'Server error' });
   }
 });
