@@ -10,7 +10,7 @@ describe('AccessLogsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AccessLogsComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(AccessLogsComponent);
     component = fixture.componentInstance;

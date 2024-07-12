@@ -14,9 +14,10 @@ export class AccessLogsComponent implements OnInit {
   page: number = 1;
   limit: number = 10;
   filter: string = '';
-
-  constructor(private apiService: ApiService) {}
   protected readonly Math = Math;
+
+  constructor(private apiService: ApiService) {
+  }
 
   ngOnInit(): void {
     this.loadAccessLogs();
@@ -25,7 +26,10 @@ export class AccessLogsComponent implements OnInit {
   loadAccessLogs(): void {
     this.apiService.getAccessLogs(this.sortBy, this.sortOrder, this.page, this.limit, this.filter).subscribe(
       (response: { users: any[], totalLogs: number }) => {
-        this.accessLogs = response.users.flatMap(user => user.accessLogs.map(log => ({ ...log, username: user.username })));
+        this.accessLogs = response.users.flatMap(user => user.accessLogs.map(log => ({
+          ...log,
+          username: user.username
+        })));
         this.totalLogs = response.totalLogs;
       },
       error => console.error('Error fetching access logs', error)

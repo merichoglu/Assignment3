@@ -10,19 +10,20 @@ import {AdminGuard} from './guards/admin.guard';
 import {AccessLogsComponent} from "./components/access-logs/access-logs.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'send', component: SendMessageComponent, canActivate: [AuthGuard] },
-  { path: 'messages', component: MessageBoxComponent, canActivate: [AuthGuard] },
-  { path: 'admin', component: AdminPanelComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'add-user', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'access-logs', component: AccessLogsComponent, canActivate: [AuthGuard, AdminGuard]},
-  { path: 'edit-user/:username', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: '**', redirectTo: 'login' }
+  {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'login', component: LoginComponent},
+  {path: 'send', component: SendMessageComponent, canActivate: [AuthGuard]},
+  {path: 'messages', component: MessageBoxComponent, canActivate: [AuthGuard]},
+  {path: 'admin', component: AdminPanelComponent, canActivate: [AuthGuard, AdminGuard]},
+  {path: 'add-user', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard]},
+  {path: 'access-logs', component: AccessLogsComponent, canActivate: [AuthGuard, AdminGuard]},
+  {path: 'edit-user/:username', component: UserFormComponent, canActivate: [AuthGuard, AdminGuard]},
+  {path: '**', redirectTo: 'login'}
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

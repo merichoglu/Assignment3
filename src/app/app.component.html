@@ -1,21 +1,25 @@
 <nav *ngIf="isAuthenticated && !isLoginRoute()" class="navbar bg-body-tertiary mb-5">
   <form class="container-fluid justify-content-center">
-    <button class="btn btn-sm btn-outline-success me-2" type="button" routerLinkActive="active" routerLink="/send">
+    <button class="btn btn-sm btn-outline-success me-2" routerLink="/send" routerLinkActive="active" type="button">
       Send Message
     </button>
-    <button class="btn btn-sm btn-outline-secondary me-2" routerLink="/messages" routerLinkActive="active" type="button">
+    <button class="btn btn-sm btn-outline-secondary me-2" routerLink="/messages" routerLinkActive="active"
+            type="button">
       Messages
     </button>
-    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-secondary me-2" type="button" routerLinkActive="active" routerLink="/admin">
+    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-secondary me-2" routerLink="/admin" routerLinkActive="active"
+            type="button">
       Admin Panel
     </button>
-    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-primary me-2" type="button" routerLinkActive="active" routerLink="/add-user">
+    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-primary me-2" routerLink="/add-user" routerLinkActive="active"
+            type="button">
       Add User
     </button>
-    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-info me-2" routerLink="/access-logs" routerLinkActive="active" type="button">
+    <button *ngIf="isAdmin" class="btn btn-sm btn-outline-info me-2" routerLink="/access-logs" routerLinkActive="active"
+            type="button">
       Logs
     </button>
-    <button class="btn btn-sm btn-outline-danger" type="button" (click)="logOut()">
+    <button (click)="logOut()" class="btn btn-sm btn-outline-danger" type="button">
       Log Out
     </button>
   </form>

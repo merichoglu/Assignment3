@@ -1,6 +1,6 @@
 const express = require('express');
 const userRoutes = express.Router();
-const { verifyToken, verifyAdmin } = require('../utils/jwtUtil');
+const {verifyToken, verifyAdmin} = require('../utils/jwtUtil');
 const User = require('../models/User');
 const Message = require('../models/Message');
 
@@ -17,28 +17,28 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
     const matchStage = filter ? {
       $match: {
         $or: [
-          { "username": { $regex: filter, $options: 'i' } },
-          { "accessLogs.ip": { $regex: filter, $options: 'i' } },
-          { "accessLogs.browser": { $regex: filter, $options: 'i' } }
+          {"username": {$regex: filter, $options: 'i'}},
+          {"accessLogs.ip": {$regex: filter, $options: 'i'}},
+          {"accessLogs.browser": {$regex: filter, $options: 'i'}}
         ]
       }
     } : {};
 
     const pipeline = [
-      { $unwind: "$accessLogs" },
+      {$unwind: "$accessLogs"},
       ...(filter ? [matchStage] : []),
       {
         $sort: {
           [sortBy]: order
         }
       },
-      { $skip: skip },
-      { $limit: limit },
+      {$skip: skip},
+      {$limit: limit},
       {
         $group: {
           _id: "$_id",
-          username: { $first: "$username" },
-          accessLogs: { $push: "$accessLogs" }
+          username: {$first: "$username"},
+          accessLogs: {$push: "$accessLogs"}
         }
       },
       {
@@ -51,16 +51,16 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
     const users = await User.aggregate(pipeline);
 
     const totalLogsPipeline = [
-      { $unwind: "$accessLogs" },
+      {$unwind: "$accessLogs"},
       ...(filter ? [matchStage] : []),
-      { $count: "total" }
+      {$count: "total"}
     ];
     const totalLogs = await User.aggregate(totalLogsPipeline);
 
-    res.json({ users, totalLogs: totalLogs[0] ? totalLogs[0].total : 0 });
+    res.json({users, totalLogs: totalLogs[0] ? totalLogs[0].total : 0});
   } catch (err) {
     console.error("Error fetching access logs:", err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({message: 'Server error'});
   }
 });
 
@@ -72,7 +72,7 @@ userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
     const sortBy = req.query.sortBy || 'username';
     const order = req.query.order === 'asc' ? 1 : -1;
 
-    const sortCriteria = { [sortBy]: order };
+    const sortCriteria = {[sortBy]: order};
 
     const users = await User.find()
       .sort(sortCriteria)
@@ -101,7 +101,7 @@ userRoutes.get('/typeahead', verifyToken, async (req, res) => {
     const users = await User.find({}, 'username').limit(10).exec();
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({message: 'Server error'});
   }
 });
 
@@ -109,31 +109,31 @@ userRoutes.get('/typeahead', verifyToken, async (req, res) => {
 userRoutes.route('/:username').get(verifyToken, async (req, res) => {
   const username = req.params.username;
   try {
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({username: username});
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({message: 'User not found'});
     }
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Fetching user failed' });
+    res.status(500).json({message: 'Fetching user failed'});
   }
 });
 
 // Create a new user (Admin only)
 userRoutes.route('/add').post(verifyToken, verifyAdmin, async (req, res) => {
-  const { username, password, email } = req.body;
+  const {username, password, email} = req.body;
   if (!username || !password || !email) {
-    return res.status(400).json({ message: 'Username, password, and email are required' });
+    return res.status(400).json({message: 'Username, password, and email are required'});
   }
   try {
     let user = new User(req.body);
     await user.save();
-    res.status(200).json({ message: 'User added successfully' });
+    res.status(200).json({message: 'User added successfully'});
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(409).json({ message: 'User already exists'})
+      return res.status(409).json({message: 'User already exists'})
     }
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({message: 'Internal server error'});
   }
 });
 
@@ -143,7 +143,7 @@ userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) =
   const updatedUser = req.body;
 
   try {
-    const user = await User.findOneAndUpdate({ username }, updatedUser, { new: true });
+    const user = await User.findOneAndUpdate({username}, updatedUser, {new: true});
     if (!user) {
       return res.status(404).send('User not found');
     }
@@ -159,19 +159,19 @@ userRoutes.route('/delete/:username').delete(verifyToken, verifyAdmin, async (re
     const username = req.params.username;
 
     // Delete the user
-    const user = await User.findOneAndDelete({ username });
+    const user = await User.findOneAndDelete({username});
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({message: 'User not found'});
     }
 
     // Update related messages
-    await Message.updateMany({ senderUsername: username }, { $set: { senderUsername: null } });
-    await Message.updateMany({ receiverUsername: username }, { $set: { receiverUsername: null } });
+    await Message.updateMany({senderUsername: username}, {$set: {senderUsername: null}});
+    await Message.updateMany({receiverUsername: username}, {$set: {receiverUsername: null}});
 
-    res.json({ message: 'User and related messages updated successfully' });
+    res.json({message: 'User and related messages updated successfully'});
   } catch (err) {
     console.error("Error deleting user:", err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({message: 'Server error'});
   }
 });
 

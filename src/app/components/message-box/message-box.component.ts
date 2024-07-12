@@ -18,14 +18,15 @@ export class MessageBoxComponent implements OnInit {
   limit: number = 10;
   totalMessages: number = 0;
 
-  constructor(private apiService: ApiService) {}
-
-  ngOnInit(): void {
-    this.loadMessages();
+  constructor(private apiService: ApiService) {
   }
 
   get totalPages(): number {
     return Math.ceil(this.totalMessages / this.limit);
+  }
+
+  ngOnInit(): void {
+    this.loadMessages();
   }
 
   toggleMessageType(type: 'inbox' | 'outbox'): void {

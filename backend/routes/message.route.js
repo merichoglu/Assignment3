@@ -1,6 +1,6 @@
 const express = require('express');
 const messageRoutes = express.Router();
-const { verifyToken, verifyAdmin } = require('../utils/jwtUtil');
+const {verifyToken, verifyAdmin} = require('../utils/jwtUtil');
 
 // Require Message model
 let Message = require('../models/Message');
@@ -11,21 +11,21 @@ let User = require("../models/User");
 // Create a new message
 messageRoutes.route('/send').post(verifyToken, async (req, res) => {
   try {
-    const { receiverUsername, title, content } = req.body;
+    const {receiverUsername, title, content} = req.body;
 
     if (!receiverUsername || !title || !content) {
-      return res.status(400).json({ error: 'Receiver, title, and content are required' });
+      return res.status(400).json({error: 'Receiver, title, and content are required'});
     }
 
-    const receiver = await User.findOne({ username: receiverUsername });
+    const receiver = await User.findOne({username: receiverUsername});
 
     if (!receiver) {
-      return res.status(409).json({ error: 'Receiver not found' });
+      return res.status(409).json({error: 'Receiver not found'});
     }
 
     let message = new Message(req.body);
     await message.save();
-    res.status(200).json({ message: 'Message sent successfully' });
+    res.status(200).json({message: 'Message sent successfully'});
   } catch (err) {
     res.status(409).send('Receiver not found.');
   }
@@ -51,23 +51,23 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = { receiverUsername: req.user.username };
+    const query = {receiverUsername: req.user.username};
     if (searchQuery) {
       query.$or = [
-        { senderUsername: new RegExp(searchQuery, 'i') },
-        { title: new RegExp(searchQuery, 'i') },
-        { content: new RegExp(searchQuery, 'i') }
+        {senderUsername: new RegExp(searchQuery, 'i')},
+        {title: new RegExp(searchQuery, 'i')},
+        {content: new RegExp(searchQuery, 'i')}
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({ [sortBy]: order })
+      .sort({[sortBy]: order})
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({ messages, totalMessages });
+    res.json({messages, totalMessages});
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
@@ -83,23 +83,23 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = { senderUsername: req.user.username };
+    const query = {senderUsername: req.user.username};
     if (searchQuery) {
       query.$or = [
-        { receiverUsername: new RegExp(searchQuery, 'i') },
-        { title: new RegExp(searchQuery, 'i') },
-        { content: new RegExp(searchQuery, 'i') }
+        {receiverUsername: new RegExp(searchQuery, 'i')},
+        {title: new RegExp(searchQuery, 'i')},
+        {content: new RegExp(searchQuery, 'i')}
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({ [sortBy]: order })
+      .sort({[sortBy]: order})
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({ messages, totalMessages });
+    res.json({messages, totalMessages});
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
@@ -109,7 +109,7 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
 // Get messages by sender username
 messageRoutes.route('/sent/:username').get(verifyToken, async (req, res) => {
   try {
-    const messages = await Message.find({ senderUsername: req.params.username });
+    const messages = await Message.find({senderUsername: req.params.username});
     res.json(messages);
   } catch (err) {
     console.log(err);
@@ -120,7 +120,7 @@ messageRoutes.route('/sent/:username').get(verifyToken, async (req, res) => {
 // Get messages by receiver username
 messageRoutes.route('/received/:username').get(verifyToken, async (req, res) => {
   try {
-    const messages = await Message.find({ receiverUsername: req.params.username });
+    const messages = await Message.find({receiverUsername: req.params.username});
     res.json(messages);
   } catch (err) {
     console.log(err);

@@ -18,8 +18,10 @@ export class AdminPanelComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 10;
+  protected readonly Math = Math;
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -43,8 +45,6 @@ export class AdminPanelComponent implements OnInit {
       );
     }
   }
-
-  protected readonly Math = Math;
 
   sortUsers(field: string) {
     if (this.sortBy === field) {

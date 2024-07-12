@@ -20,7 +20,8 @@ export class SendMessageComponent implements OnInit {
   errorMessage: string = '';
   userList: string[] = [];
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.loadUserList();

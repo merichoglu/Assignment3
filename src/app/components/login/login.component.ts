@@ -12,7 +12,8 @@ export class LoginComponent {
   password: string;
   errorMessage: string = '';
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router) {
+  }
 
   login() {
     this.apiService.login(this.username, this.password).subscribe(

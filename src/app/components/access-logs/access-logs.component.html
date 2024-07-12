@@ -1,21 +1,27 @@
 <div class="container">
   <h2>User Access Logs</h2>
   <div>Total logs: <b>{{ totalLogs }}</b></div>
-  <input (input)="applyFilter()" [(ngModel)]="filter" class="form-control mt-3 mb-3" placeholder="Filter logs" type="text">
+  <input (input)="applyFilter()" [(ngModel)]="filter" class="form-control mt-3 mb-3" placeholder="Filter logs"
+         type="text">
 
   <table class="table table-striped">
     <thead>
     <tr>
-      <th (click)="sortLogs('username')">Username <span *ngIf="sortBy === 'username'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortLogs('accessLogs.loginTime')">Login Time <span *ngIf="sortBy === 'accessLogs.loginTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortLogs('accessLogs.logoutTime')">Logout Time <span *ngIf="sortBy === 'accessLogs.logoutTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortLogs('accessLogs.ip')">IP <span *ngIf="sortBy === 'accessLogs.ip'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortLogs('accessLogs.browser')">Browser <span *ngIf="sortBy === 'accessLogs.browser'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('username')">Username <span
+        *ngIf="sortBy === 'username'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.loginTime')">Login Time <span
+        *ngIf="sortBy === 'accessLogs.loginTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.logoutTime')">Logout Time <span
+        *ngIf="sortBy === 'accessLogs.logoutTime'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.ip')">IP <span
+        *ngIf="sortBy === 'accessLogs.ip'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortLogs('accessLogs.browser')">Browser <span
+        *ngIf="sortBy === 'accessLogs.browser'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let log of accessLogs">
-      <td>{{ log.username || 'Deleted user'}}</td>
+      <td>{{ log.username || 'Deleted user' }}</td>
       <td>{{ log.loginTime | date:'medium' }}</td>
       <td>{{ log.logoutTime ? (log.logoutTime | date:'medium') : '-' }}</td>
       <td>{{ log.ip }}</td>
@@ -31,7 +37,8 @@
       <li [class.disabled]="page === 1" class="page-item">
         <a (click)="changePage(page - 1)" class="page-link">Previous</a>
       </li>
-      <li *ngFor="let p of [].constructor(Math.ceil(totalLogs / limit)); let i = index" [class.active]="page === i + 1" class="page-item">
+      <li *ngFor="let p of [].constructor(Math.ceil(totalLogs / limit)); let i = index" [class.active]="page === i + 1"
+          class="page-item">
         <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
       </li>
       <li [class.disabled]="page === Math.ceil(totalLogs / limit)" class="page-item">

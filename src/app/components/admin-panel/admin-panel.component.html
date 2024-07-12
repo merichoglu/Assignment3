@@ -1,17 +1,24 @@
 <div class="container">
   <h2>Admin Panel</h2>
   <div>Total users: <b>{{ totalUsers }}</b></div>
-  <input type="text" class="form-control mt-3 mb-3" placeholder="Search Users" [(ngModel)]="searchQuery" (input)="searchUsers()">
+  <input (input)="searchUsers()" [(ngModel)]="searchQuery" class="form-control mt-3 mb-3" placeholder="Search Users"
+         type="text">
 
   <table class="table table-striped">
     <thead>
     <tr>
-      <th (click)="sortUsers('username')">Username <span *ngIf="sortBy === 'username'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortUsers('name')">Name <span *ngIf="sortBy === 'name'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortUsers('surname')">Surname <span *ngIf="sortBy === 'surname'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortUsers('email')">Email <span *ngIf="sortBy === 'email'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortUsers('gender')">Gender <span *ngIf="sortBy === 'gender'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortUsers('location')">City <span *ngIf="sortBy === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('username')">Username <span
+        *ngIf="sortBy === 'username'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('name')">Name <span
+        *ngIf="sortBy === 'name'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('surname')">Surname <span
+        *ngIf="sortBy === 'surname'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('email')">Email <span
+        *ngIf="sortBy === 'email'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('gender')">Gender <span
+        *ngIf="sortBy === 'gender'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortUsers('location')">City <span
+        *ngIf="sortBy === 'location'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -36,7 +43,8 @@
       <li [class.disabled]="currentPage === 1" class="page-item">
         <a (click)="changePage(currentPage - 1)" class="page-link">Previous</a>
       </li>
-      <li *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1" class="page-item">
+      <li *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1"
+          class="page-item">
         <a (click)="changePage(i + 1)" class="page-link">{{ i + 1 }}</a>
       </li>
       <li [class.disabled]="currentPage === totalPages" class="page-item">

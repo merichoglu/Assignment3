@@ -3,7 +3,7 @@ const secret = 'ilovesrdc';
 const Blacklist = require('../models/Blacklist');
 
 const generateToken = (user) => {
-  return jwt.sign({ username: user.username, isAdmin: user.isAdmin }, secret, { expiresIn: '1h' });
+  return jwt.sign({username: user.username, isAdmin: user.isAdmin}, secret, {expiresIn: '1h'});
 };
 
 const verifyToken = async (req, res, next) => {
@@ -13,7 +13,7 @@ const verifyToken = async (req, res, next) => {
   const actualToken = token.split(' ')[1];
 
   // Check if token is blacklisted
-  const blacklisted = await Blacklist.findOne({ token: actualToken });
+  const blacklisted = await Blacklist.findOne({token: actualToken});
   if (blacklisted) {
     return res.status(401).send('Token is blacklisted');
   }

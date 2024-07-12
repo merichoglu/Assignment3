@@ -1,25 +1,35 @@
 <div class="container">
   <h2>{{ messageType === 'inbox' ? 'Inbox Messages' : 'Outbox Messages' }}</h2>
   <div class="button-group mb-3">
-    <button (click)="toggleMessageType('inbox')" [class.active]="messageType === 'inbox'" class="btn btn-secondary">Inbox</button>
-    <button (click)="toggleMessageType('outbox')" [class.active]="messageType === 'outbox'" class="btn btn-secondary">Outbox</button>
+    <button (click)="toggleMessageType('inbox')" [class.active]="messageType === 'inbox'" class="btn btn-secondary">
+      Inbox
+    </button>
+    <button (click)="toggleMessageType('outbox')" [class.active]="messageType === 'outbox'" class="btn btn-secondary">
+      Outbox
+    </button>
   </div>
   <div>Total {{ messageType }} messages: {{ totalMessages }}</div>
-  <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50 mb-3" placeholder="Search Messages" type="text">
+  <input (input)="searchMessages()" [(ngModel)]="searchQuery" class="form-control w-50 mb-3"
+         placeholder="Search Messages" type="text">
   <table class="table table-striped">
     <thead>
     <tr>
-      <th (click)="sortMessages('senderUsername')" *ngIf="messageType === 'inbox'">Sender Username <span *ngIf="sortColumn === 'senderUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortMessages('receiverUsername')" *ngIf="messageType === 'outbox'">Receiver Username <span *ngIf="sortColumn === 'receiverUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortMessages('title')">Title <span *ngIf="sortColumn === 'title'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortMessages('content')">Content <span *ngIf="sortColumn === 'content'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
-      <th (click)="sortMessages('timestamp')">Timestamp <span *ngIf="sortColumn === 'timestamp'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('senderUsername')" *ngIf="messageType === 'inbox'">Sender Username <span
+        *ngIf="sortColumn === 'senderUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('receiverUsername')" *ngIf="messageType === 'outbox'">Receiver Username <span
+        *ngIf="sortColumn === 'receiverUsername'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('title')">Title <span
+        *ngIf="sortColumn === 'title'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('content')">Content <span
+        *ngIf="sortColumn === 'content'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
+      <th (click)="sortMessages('timestamp')">Timestamp <span
+        *ngIf="sortColumn === 'timestamp'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span></th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let message of messages">
       <td *ngIf="messageType === 'inbox'">{{ message.senderUsername || 'Deleted user' }}</td>
-      <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername || 'Deleted user'}}</td>
+      <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername || 'Deleted user' }}</td>
       <td>{{ message.title }}</td>
       <td>{{ message.content }}</td>
       <td>{{ message.timestamp | date:'medium' }}</td>

@@ -22,7 +22,8 @@ export class UserFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -60,7 +61,7 @@ export class UserFormComponent implements OnInit {
         const user: User = this.userForm.getRawValue();
         this.apiService.updateUser(this.username, user).subscribe(
           () => {
-            this.snackBar.open('User updated successfully', 'Close', { duration: 3000 });
+            this.snackBar.open('User updated successfully', 'Close', {duration: 3000});
             this.router.navigate(['/admin']);
           },
           error => {
@@ -75,7 +76,7 @@ export class UserFormComponent implements OnInit {
       const user: User = this.userForm.getRawValue();
       this.apiService.addUser(user).subscribe(
         () => {
-          this.snackBar.open('User added successfully', 'Close', { duration: 3000 });
+          this.snackBar.open('User added successfully', 'Close', {duration: 3000});
           this.router.navigate(['/admin']);
         },
         error => {

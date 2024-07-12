@@ -15,7 +15,8 @@ export class ApiService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   private isAdminSubject = new BehaviorSubject<boolean>(this.isAdminUser());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getCurrentUser(): Observable<User | null> {
     return this.currentUserSubject.asObservable();
@@ -30,7 +31,7 @@ export class ApiService {
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/auth/login`, { username, password }).pipe(
+    return this.http.post<any>(`${this.baseUrl}/auth/login`, {username, password}).pipe(
       tap(response => {
         if (response && response.token) {
           const decodedToken: any = jwtDecode(response.token);
@@ -60,7 +61,7 @@ export class ApiService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}, { headers }).pipe(
+    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}, {headers}).pipe(
       tap(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('isAdmin');
@@ -69,19 +70,6 @@ export class ApiService {
         this.isAdminSubject.next(false);
       })
     );
-  }
-
-  private hasToken(): boolean {
-    return !!localStorage.getItem('token');
-  }
-
-  private isAdminUser(): boolean {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedToken: any = jwtDecode(token);
-      return decodedToken.isAdmin;
-    }
-    return false;
   }
 
   getUsers(page: number, limit: number, sortBy: string, order: string): Observable<any> {
@@ -95,12 +83,12 @@ export class ApiService {
       .set('sortBy', sortBy)
       .set('order', order);
 
-    return this.http.get<any>(`${this.baseUrl}/users`, { headers, params });
+    return this.http.get<any>(`${this.baseUrl}/users`, {headers, params});
   }
 
   getUser(username: string): Observable<User> {
     const headers = this.getAuthHeaders().headers;
-    return this.http.get<User>(`${this.baseUrl}/users/${username}`, { headers });
+    return this.http.get<User>(`${this.baseUrl}/users/${username}`, {headers});
   }
 
   addUser(user: User): Observable<any> {
@@ -116,11 +104,17 @@ export class ApiService {
   }
 
   getInbox(params: HttpParams): Observable<{ messages: Message[], totalMessages: number }> {
-    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/inbox`, { headers: this.getAuthHeaders().headers, params });
+    return this.http.get<{
+      messages: Message[],
+      totalMessages: number
+    }>(`${this.baseUrl}/messages/inbox`, {headers: this.getAuthHeaders().headers, params});
   }
 
   getOutbox(params: HttpParams): Observable<{ messages: Message[], totalMessages: number }> {
-    return this.http.get<{ messages: Message[], totalMessages: number }>(`${this.baseUrl}/messages/outbox`, { headers: this.getAuthHeaders().headers, params });
+    return this.http.get<{
+      messages: Message[],
+      totalMessages: number
+    }>(`${this.baseUrl}/messages/outbox`, {headers: this.getAuthHeaders().headers, params});
   }
 
   sendMessage(message: Message): Observable<any> {
@@ -144,7 +138,20 @@ export class ApiService {
       .set('limit', limit.toString())
       .set('filter', filter);
 
-    return this.http.get<any>(`${this.baseUrl}/users/access-logs`, { headers, params });
+    return this.http.get<any>(`${this.baseUrl}/users/access-logs`, {headers, params});
+  }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  private isAdminUser(): boolean {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.isAdmin;
+    }
+    return false;
   }
 
   private getAuthHeaders() {
