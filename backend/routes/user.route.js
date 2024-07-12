@@ -2,6 +2,7 @@ const express = require('express');
 const userRoutes = express.Router();
 const { verifyToken, verifyAdmin } = require('../utils/jwtUtil');
 const User = require('../models/User');
+const Message = require('../models/Message');
 
 // Get user access logs with sorting and pagination
 userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
@@ -155,14 +156,24 @@ userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) =
 // Delete user (Admin only)
 userRoutes.route('/delete/:username').delete(verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const user = await User.findOneAndDelete({ username: req.params.username });
+    const username = req.params.username;
+
+    // Delete the user
+    const user = await User.findOneAndDelete({ username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ message: 'User deleted successfully' });
+
+    // Update related messages
+    await Message.updateMany({ senderUsername: username }, { $set: { senderUsername: null } });
+    await Message.updateMany({ receiverUsername: username }, { $set: { receiverUsername: null } });
+
+    res.json({ message: 'User and related messages updated successfully' });
   } catch (err) {
+    console.error("Error deleting user:", err);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 module.exports = userRoutes;

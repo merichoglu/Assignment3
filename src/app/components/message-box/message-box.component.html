@@ -18,8 +18,8 @@
     </thead>
     <tbody>
     <tr *ngFor="let message of messages">
-      <td *ngIf="messageType === 'inbox'">{{ message.senderUsername }}</td>
-      <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername }}</td>
+      <td *ngIf="messageType === 'inbox'">{{ message.senderUsername || 'Deleted user' }}</td>
+      <td *ngIf="messageType === 'outbox'">{{ message.receiverUsername || 'Deleted user'}}</td>
       <td>{{ message.title }}</td>
       <td>{{ message.content }}</td>
       <td>{{ message.timestamp | date:'medium' }}</td>

@@ -15,7 +15,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let log of accessLogs">
-      <td>{{ log.username }}</td>
+      <td>{{ log.username || 'Deleted user'}}</td>
       <td>{{ log.loginTime | date:'medium' }}</td>
       <td>{{ log.logoutTime ? (log.logoutTime | date:'medium') : '-' }}</td>
       <td>{{ log.ip }}</td>
