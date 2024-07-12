@@ -109,7 +109,7 @@ userRoutes.get('/typeahead', verifyToken, async (req, res) => {
 userRoutes.route('/:username').get(verifyToken, async (req, res) => {
   const username = req.params.username;
   try {
-    const user = await User.findOne({username: username});
+    const user = await User.findOne({username: username}).select('-password');
     if (!user) {
       return res.status(404).json({message: 'User not found'});
     }
@@ -140,18 +140,24 @@ userRoutes.route('/add').post(verifyToken, verifyAdmin, async (req, res) => {
 // Update user (Admin only)
 userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) => {
   const username = req.params.username;
-  const updatedUser = req.body;
+  const updatedUser = { ...req.body };
+
+  // If password is not provided, delete it from the update object
+  if (!updatedUser.password) {
+    delete updatedUser.password;
+  }
 
   try {
-    const user = await User.findOneAndUpdate({username}, updatedUser, {new: true});
+    const user = await User.findOneAndUpdate({ username }, updatedUser, { new: true }).select('-password');
     if (!user) {
       return res.status(404).send('User not found');
     }
-    res.status(200).json(user);
+    res.status(200).json({ message: 'User updated successfully' });
   } catch (err) {
     res.status(500).send('Error updating user');
   }
 });
+
 
 // Delete user (Admin only)
 userRoutes.route('/delete/:username').delete(verifyToken, verifyAdmin, async (req, res) => {

@@ -22,7 +22,8 @@ export class UserFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -32,14 +33,16 @@ export class UserFormComponent implements OnInit {
         this.apiService.getUser(this.username).subscribe(user => {
           this.userForm.patchValue(user);
           this.userForm.get('username').disable(); // Disable username field in edit mode
-          this.userForm.get('password').disable(); // Disable password field in edit mode
+          // If in edit mode, don't require the password
+          this.userForm.get('password').clearValidators();
+          this.userForm.get('password').updateValueAndValidity();
         });
       }
     });
 
     this.userForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required],
+      password: [''], // Password is optional in edit mode
       name: ['', Validators.required],
       surname: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -56,12 +59,17 @@ export class UserFormComponent implements OnInit {
       return;
     }
 
+    const user: User = this.userForm.getRawValue();
+
     if (this.isEditMode) {
       if (window.confirm('Are you sure you want to update this user?')) {
-        const user: User = this.userForm.getRawValue();
+        // Don't send password if it's empty
+        if (!user.password) {
+          delete user.password;
+        }
         this.apiService.updateUser(this.username, user).subscribe(
           () => {
-            this.snackBar.open('User updated successfully', 'Close', { duration: 3000 });
+            this.snackBar.open('User updated successfully', 'Close', {duration: 3000});
             this.router.navigate(['/admin']);
           },
           error => {
@@ -73,10 +81,9 @@ export class UserFormComponent implements OnInit {
         );
       }
     } else {
-      const user: User = this.userForm.getRawValue();
       this.apiService.addUser(user).subscribe(
         () => {
-          this.snackBar.open('User added successfully', 'Close', { duration: 3000 });
+          this.snackBar.open('User added successfully', 'Close', {duration: 3000});
           this.router.navigate(['/admin']);
         },
         error => {
