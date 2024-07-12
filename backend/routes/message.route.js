@@ -31,18 +31,6 @@ messageRoutes.route('/send').post(verifyToken, async (req, res) => {
   }
 });
 
-
-// Get all messages (for debugging purpose)
-messageRoutes.route('/').get(verifyToken, async (req, res) => {
-  try {
-    const messages = await Message.find();
-    res.json(messages);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
-});
-
 // Get inbox messages
 messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
@@ -132,28 +120,6 @@ messageRoutes.route('/delete/:id').delete(verifyToken, async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
-  }
-});
-
-// Get messages by sender username
-messageRoutes.route('/sent/:username').get(verifyToken, async (req, res) => {
-  try {
-    const messages = await Message.find({senderUsername: req.params.username});
-    res.json(messages);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
-});
-
-// Get messages by receiver username
-messageRoutes.route('/received/:username').get(verifyToken, async (req, res) => {
-  try {
-    const messages = await Message.find({receiverUsername: req.params.username});
-    res.json(messages);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
   }
 });
 
