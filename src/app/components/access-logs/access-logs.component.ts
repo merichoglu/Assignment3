@@ -10,7 +10,7 @@ export class AccessLogsComponent implements OnInit {
   accessLogs: any[] = [];
   totalLogs: number = 0;
   sortBy: string = 'accessLogs.loginTime';
-  sortOrder: string = 'asc';
+  sortOrder: string = 'desc';
   page: number = 1;
   limit: number = 10;
   filter: string = '';
@@ -41,7 +41,7 @@ export class AccessLogsComponent implements OnInit {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortBy = column;
-      this.sortOrder = 'asc';
+      this.sortOrder = 'desc';
     }
     this.loadAccessLogs();
   }

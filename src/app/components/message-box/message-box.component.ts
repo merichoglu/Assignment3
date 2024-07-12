@@ -13,7 +13,7 @@ export class MessageBoxComponent implements OnInit {
   searchQuery: string = '';
   messageType: 'inbox' | 'outbox' = 'inbox';
   sortColumn: string = 'timestamp';
-  sortOrder: 'asc' | 'desc' = 'asc';
+  sortOrder: 'asc' | 'desc' = 'desc';
   page: number = 1;
   limit: number = 10;
   totalMessages: number = 0;
@@ -40,7 +40,7 @@ export class MessageBoxComponent implements OnInit {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = column;
-      this.sortOrder = 'asc';
+      this.sortOrder = 'desc';
     }
     this.loadMessages();
   }
