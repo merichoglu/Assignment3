@@ -12,8 +12,22 @@ import {Message} from 'src/app/model/message';
 export class ApiService {
   private baseUrl = 'http://localhost:4000';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  private isAdminSubject = new BehaviorSubject<boolean>(this.isAdminUser());
 
   constructor(private http: HttpClient) {}
+
+  getCurrentUser(): Observable<User | null> {
+    return this.currentUserSubject.asObservable();
+  }
+
+  isAuthenticated(): Observable<boolean> {
+    return this.isAuthenticatedSubject.asObservable();
+  }
+
+  isAdmin(): Observable<boolean> {
+    return this.isAdminSubject.asObservable();
+  }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/auth/login`, { username, password }).pipe(
@@ -34,6 +48,8 @@ export class ApiService {
             accessLogs: []
           };
           this.currentUserSubject.next(user);
+          this.isAuthenticatedSubject.next(true);
+          this.isAdminSubject.next(decodedToken.isAdmin);
         }
       })
     );
@@ -44,7 +60,28 @@ export class ApiService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}, { headers });
+    return this.http.post<any>(`${this.baseUrl}/auth/logout`, {}, { headers }).pipe(
+      tap(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('isAdmin');
+        this.currentUserSubject.next(null);
+        this.isAuthenticatedSubject.next(false);
+        this.isAdminSubject.next(false);
+      })
+    );
+  }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  private isAdminUser(): boolean {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.isAdmin;
+    }
+    return false;
   }
 
   getUsers(page: number, limit: number, sortBy: string, order: string): Observable<any> {

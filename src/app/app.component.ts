@@ -9,6 +9,7 @@ import {ApiService} from "./service/api.service";
 })
 export class AppComponent implements OnInit {
   isAdmin: boolean = false;
+  isAuthenticated: boolean = false;
   currentRoute: string = '';
   title: string = 'mean-stack-crud-app';
 
@@ -22,12 +23,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    const isAdmin = localStorage.getItem('isAdmin');
+    this.apiService.isAdmin().subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+    });
 
-    if (token && isAdmin === 'true') {
-      this.isAdmin = true;
-    }
+    this.apiService.isAuthenticated().subscribe(isAuthenticated => {
+      this.isAuthenticated = isAuthenticated;
+    });
   }
 
   isLoginRoute(): boolean {
