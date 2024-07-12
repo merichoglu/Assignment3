@@ -43,6 +43,7 @@ messageRoutes.route('/').get(verifyToken, async (req, res) => {
   }
 });
 
+// Get inbox messages
 messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
@@ -51,23 +52,23 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = {receiverUsername: req.user.username};
+    const query = { receiverUsername: req.user.username, receiverDeleted: false };
     if (searchQuery) {
       query.$or = [
-        {senderUsername: new RegExp(searchQuery, 'i')},
-        {title: new RegExp(searchQuery, 'i')},
-        {content: new RegExp(searchQuery, 'i')}
+        { senderUsername: new RegExp(searchQuery, 'i') },
+        { title: new RegExp(searchQuery, 'i') },
+        { content: new RegExp(searchQuery, 'i') }
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({[sortBy]: order})
+      .sort({ [sortBy]: order })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({messages, totalMessages});
+    res.json({ messages, totalMessages });
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
@@ -83,23 +84,51 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = {senderUsername: req.user.username};
+    const query = { senderUsername: req.user.username, senderDeleted: false };
     if (searchQuery) {
       query.$or = [
-        {receiverUsername: new RegExp(searchQuery, 'i')},
-        {title: new RegExp(searchQuery, 'i')},
-        {content: new RegExp(searchQuery, 'i')}
+        { receiverUsername: new RegExp(searchQuery, 'i') },
+        { title: new RegExp(searchQuery, 'i') },
+        { content: new RegExp(searchQuery, 'i') }
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({[sortBy]: order})
+      .sort({ [sortBy]: order })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({messages, totalMessages});
+    res.json({ messages, totalMessages });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+// Delete message (logical deletion)
+messageRoutes.route('/delete/:id').delete(verifyToken, async (req, res) => {
+  try {
+    const user = req.user;
+    const messageId = req.params.id;
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    if (message.receiverUsername === user.username) {
+      message.receiverDeleted = true;
+    }
+
+    if (message.senderUsername === user.username) {
+      message.senderDeleted = true;
+    }
+
+    await message.save();
+
+    res.json({ message: 'Message deleted' });
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');

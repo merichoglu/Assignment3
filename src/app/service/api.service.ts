@@ -126,6 +126,20 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/users/typeahead`, this.getAuthHeaders());
   }
 
+  deleteInboxMessage(id: string): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    });
+    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, { headers });
+  }
+
+  deleteOutboxMessage(id: string): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    });
+    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, { headers });
+  }
+
   getAccessLogs(sortBy: string, order: string, page: number, limit: number, filter: string): Observable<any> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('token')}`

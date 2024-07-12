@@ -75,4 +75,21 @@ export class MessageBoxComponent implements OnInit {
     this.page = page;
     this.loadMessages();
   }
+
+  deleteMessage(id: string): void {
+    if (confirm('Are you sure you want to delete this message?')) {
+      const deleteObservable = this.messageType === 'inbox'
+        ? this.apiService.deleteInboxMessage(id)
+        : this.apiService.deleteOutboxMessage(id);
+
+      deleteObservable.subscribe(
+        () => {
+          this.loadMessages(); // Refresh the messages after deletion
+        },
+        error => {
+          console.error('Error deleting message', error);
+        }
+      );
+    }
+  }
 }
