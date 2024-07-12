@@ -3,6 +3,7 @@ const userRoutes = express.Router();
 const {verifyToken, verifyAdmin} = require('../utils/jwtUtil');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const bcrypt = require('bcrypt');
 
 // Get user access logs with sorting and pagination
 userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
@@ -120,20 +121,22 @@ userRoutes.route('/:username').get(verifyToken, async (req, res) => {
 });
 
 // Create a new user (Admin only)
-userRoutes.route('/add').post(verifyToken, verifyAdmin, async (req, res) => {
-  const {username, password, email} = req.body;
+userRoutes.post('/add', verifyToken, verifyAdmin, async (req, res) => {
+  const { username, password, email } = req.body;
   if (!username || !password || !email) {
-    return res.status(400).json({message: 'Username, password, and email are required'});
+    return res.status(400).json({ message: 'Username, password, and email are required' });
   }
   try {
-    let user = new User(req.body);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ ...req.body, password: hashedPassword });
     await user.save();
-    res.status(200).json({message: 'User added successfully'});
+    res.status(200).json({ message: 'User added successfully' });
   } catch (err) {
+    console.error('Error adding user: ', err); // Added logging
     if (err.code === 11000) {
-      return res.status(409).json({message: 'User already exists'})
+      return res.status(409).json({ message: 'User already exists' });
     }
-    res.status(500).json({message: 'Internal server error'});
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -142,22 +145,25 @@ userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) =
   const username = req.params.username;
   const updatedUser = { ...req.body };
 
-  // If password is not provided, delete it from the update object
-  if (!updatedUser.password) {
-    delete updatedUser.password;
-  }
-
   try {
+    // If password is provided, hash it
+    if (updatedUser.password) {
+      updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
+    } else {
+      // If password is not provided, delete it from the update object
+      delete updatedUser.password;
+    }
+
     const user = await User.findOneAndUpdate({ username }, updatedUser, { new: true }).select('-password');
     if (!user) {
       return res.status(404).send('User not found');
     }
     res.status(200).json({ message: 'User updated successfully' });
   } catch (err) {
+    console.error('Error updating user: ', err); // Added logging
     res.status(500).send('Error updating user');
   }
 });
-
 
 // Delete user (Admin only)
 userRoutes.route('/delete/:username').delete(verifyToken, verifyAdmin, async (req, res) => {
