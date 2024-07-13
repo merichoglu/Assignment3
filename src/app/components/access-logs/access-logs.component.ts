@@ -32,7 +32,7 @@ export class AccessLogsComponent implements OnInit {
         })));
         this.totalLogs = response.totalLogs;
       },
-      error => console.error('Error fetching access logs', error)
+      error => console.error(error)
     );
   }
 

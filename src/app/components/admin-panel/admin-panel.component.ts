@@ -40,7 +40,7 @@ export class AdminPanelComponent implements OnInit {
           this.loadUsers();
         },
         error => {
-          console.error('Error deleting user:', error);
+          console.error(error);
         }
       );
     }
