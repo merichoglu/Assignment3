@@ -42,7 +42,7 @@ export class UserFormComponent implements OnInit {
 
     this.userForm = this.fb.group({
       username: ['', Validators.required],
-      password: [''], // Password is optional in edit mode
+      password: [''],
       name: ['', Validators.required],
       surname: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -73,7 +73,7 @@ export class UserFormComponent implements OnInit {
             this.router.navigate(['/admin']);
           },
           error => {
-            console.error('Error updating user', error);
+            console.error(error);
             if (error.status === 409) {
               this.usernameExists = true;
             }
@@ -87,7 +87,7 @@ export class UserFormComponent implements OnInit {
           this.router.navigate(['/admin']);
         },
         error => {
-          console.error('Error adding user', error);
+          console.error(error);
           if (error.status === 409) {
             this.usernameExists = true;
           }

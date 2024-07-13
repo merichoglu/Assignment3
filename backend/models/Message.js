@@ -6,8 +6,8 @@ const messageSchema = new mongoose.Schema({
   receiverUsername: {type: String, required: true},
   title: {type: String},
   content: {type: String, required: true},
-  senderDeleted: { type: Boolean, default: false },
-  receiverDeleted: { type: Boolean, default: false }
+  senderDeleted: {type: Boolean, default: false},
+  receiverDeleted: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('Message', messageSchema);

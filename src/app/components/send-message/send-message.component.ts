@@ -36,7 +36,7 @@ export class SendMessageComponent implements OnInit {
           this.userList = [];
         }
       },
-      error: (err) => {
+      error: () => {
         this.errorMessage = 'Error loading user list';
       }
     });
@@ -88,9 +88,5 @@ export class SendMessageComponent implements OnInit {
     } catch (e) {
       return null;
     }
-  }
-
-  onSelect(event: any): void {
-    this.message.receiverUsername = event.item;
   }
 }

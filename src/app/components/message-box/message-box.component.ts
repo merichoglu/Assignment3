@@ -84,10 +84,10 @@ export class MessageBoxComponent implements OnInit {
 
       deleteObservable.subscribe(
         () => {
-          this.loadMessages(); // Refresh the messages after deletion
+          this.loadMessages(); // Refresh after deletion
         },
         error => {
-          console.error('Error deleting message', error);
+          console.error(error);
         }
       );
     }

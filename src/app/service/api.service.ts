@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {jwtDecode} from 'jwt-decode'; // Correct import for named export
+import {jwtDecode} from 'jwt-decode';
 import {User} from 'src/app/model/user';
 import {Message} from 'src/app/model/message';
 
@@ -16,10 +16,6 @@ export class ApiService {
   private isAdminSubject = new BehaviorSubject<boolean>(this.isAdminUser());
 
   constructor(private http: HttpClient) {
-  }
-
-  getCurrentUser(): Observable<User | null> {
-    return this.currentUserSubject.asObservable();
   }
 
   isAuthenticated(): Observable<boolean> {
@@ -130,14 +126,14 @@ export class ApiService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('token')}`
     });
-    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, { headers });
+    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, {headers});
   }
 
   deleteOutboxMessage(id: string): Observable<any> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${localStorage.getItem('token')}`
     });
-    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, { headers });
+    return this.http.delete(`${this.baseUrl}/messages/delete/${id}`, {headers});
   }
 
   getAccessLogs(sortBy: string, order: string, page: number, limit: number, filter: string): Observable<any> {

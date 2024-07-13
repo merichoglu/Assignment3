@@ -15,7 +15,8 @@
     </div>
     <div class="form-group">
       <label for="password">Password</label>
-      <input [readonly]="isEditMode" class="form-control bg-light" formControlName="password" id="password" type="password">
+      <input [readonly]="isEditMode" class="form-control bg-light" formControlName="password" id="password"
+             type="password">
       <div
         *ngIf="userForm.controls['password'].invalid && (userForm.controls['password'].dirty || userForm.controls['password'].touched)"
         class="text-danger">

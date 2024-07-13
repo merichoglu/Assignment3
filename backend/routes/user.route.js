@@ -5,7 +5,7 @@ const User = require('../models/User');
 const Message = require('../models/Message');
 const bcrypt = require('bcrypt');
 
-// Get user access logs with sorting and pagination
+// Get user access logs, sorted and paginated
 userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'accessLogs.loginTime';
@@ -60,12 +60,12 @@ userRoutes.get('/access-logs', verifyToken, verifyAdmin, async (req, res) => {
 
     res.json({users, totalLogs: totalLogs[0] ? totalLogs[0].total : 0});
   } catch (err) {
-    console.error("Error fetching access logs:", err);
+    console.error(err);
     res.status(500).json({message: 'Server error'});
   }
 });
 
-// Get all users with paging and sorting
+// Get all users, paginated and sorted
 userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -96,7 +96,7 @@ userRoutes.route('/').get(verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
-// Typeahead route to get user list, no admin privilege
+// Typeahead route to get user list, no admin privilege, only username is returned
 userRoutes.get('/typeahead', verifyToken, async (req, res) => {
   try {
     const users = await User.find({}, 'username').limit(10).exec();
@@ -122,28 +122,28 @@ userRoutes.route('/:username').get(verifyToken, async (req, res) => {
 
 // Create a new user (Admin only)
 userRoutes.post('/add', verifyToken, verifyAdmin, async (req, res) => {
-  const { username, password, email } = req.body;
+  const {username, password, email} = req.body;
   if (!username || !password || !email) {
-    return res.status(400).json({ message: 'Username, password, and email are required' });
+    return res.status(400).json({message: 'Username, password, and email are required'});
   }
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ ...req.body, password: hashedPassword });
+    const user = new User({...req.body, password: hashedPassword});
     await user.save();
-    res.status(200).json({ message: 'User added successfully' });
+    res.status(200).json({message: 'User added successfully'});
   } catch (err) {
-    console.error('Error adding user: ', err); // Added logging
+    console.error(err); // Added logging
     if (err.code === 11000) {
-      return res.status(409).json({ message: 'User already exists' });
+      return res.status(409).json({message: 'User already exists'});
     }
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({message: 'Internal server error'});
   }
 });
 
 // Update user (Admin only)
 userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) => {
   const username = req.params.username;
-  const updatedUser = { ...req.body };
+  const updatedUser = {...req.body};
 
   try {
     // If password is provided, hash it
@@ -154,13 +154,13 @@ userRoutes.put('/update/:username', verifyToken, verifyAdmin, async (req, res) =
       delete updatedUser.password;
     }
 
-    const user = await User.findOneAndUpdate({ username }, updatedUser, { new: true }).select('-password');
+    const user = await User.findOneAndUpdate({username}, updatedUser, {new: true}).select('-password');
     if (!user) {
       return res.status(404).send('User not found');
     }
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({message: 'User updated successfully'});
   } catch (err) {
-    console.error('Error updating user: ', err); // Added logging
+    console.error(err); // Added logging
     res.status(500).send('Error updating user');
   }
 });
@@ -182,7 +182,7 @@ userRoutes.route('/delete/:username').delete(verifyToken, verifyAdmin, async (re
 
     res.json({message: 'User and related messages updated successfully'});
   } catch (err) {
-    console.error("Error deleting user:", err);
+    console.error(err);
     res.status(500).json({message: 'Server error'});
   }
 });

@@ -1,14 +1,11 @@
 const express = require('express');
 const messageRoutes = express.Router();
-const {verifyToken, verifyAdmin} = require('../utils/jwtUtil');
+const {verifyToken} = require('../utils/jwtUtil');
 
-// Require Message model
 let Message = require('../models/Message');
-
-// Require User model
 let User = require("../models/User");
 
-// Create a new message
+// Send message
 messageRoutes.route('/send').post(verifyToken, async (req, res) => {
   try {
     const {receiverUsername, title, content} = req.body;
@@ -31,7 +28,7 @@ messageRoutes.route('/send').post(verifyToken, async (req, res) => {
   }
 });
 
-// Get inbox messages
+// Get inbox messages, paginated and sorted
 messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
@@ -40,30 +37,30 @@ messageRoutes.route('/inbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = { receiverUsername: req.user.username, receiverDeleted: false };
+    const query = {receiverUsername: req.user.username, receiverDeleted: false};
     if (searchQuery) {
       query.$or = [
-        { senderUsername: new RegExp(searchQuery, 'i') },
-        { title: new RegExp(searchQuery, 'i') },
-        { content: new RegExp(searchQuery, 'i') }
+        {senderUsername: new RegExp(searchQuery, 'i')},
+        {title: new RegExp(searchQuery, 'i')},
+        {content: new RegExp(searchQuery, 'i')}
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({ [sortBy]: order })
+      .sort({[sortBy]: order})
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({ messages, totalMessages });
+    res.json({messages, totalMessages});
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
   }
 });
 
-// Get outbox messages
+// Get outbox messages, paginated and sorted
 messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
   try {
     const sortBy = req.query.sortBy || 'timestamp';
@@ -72,30 +69,30 @@ messageRoutes.route('/outbox').get(verifyToken, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchQuery = req.query.searchQuery ? req.query.searchQuery.toLowerCase() : '';
 
-    const query = { senderUsername: req.user.username, senderDeleted: false };
+    const query = {senderUsername: req.user.username, senderDeleted: false};
     if (searchQuery) {
       query.$or = [
-        { receiverUsername: new RegExp(searchQuery, 'i') },
-        { title: new RegExp(searchQuery, 'i') },
-        { content: new RegExp(searchQuery, 'i') }
+        {receiverUsername: new RegExp(searchQuery, 'i')},
+        {title: new RegExp(searchQuery, 'i')},
+        {content: new RegExp(searchQuery, 'i')}
       ];
     }
 
     const messages = await Message.find(query)
-      .sort({ [sortBy]: order })
+      .sort({[sortBy]: order})
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
     const totalMessages = await Message.countDocuments(query);
 
-    res.json({ messages, totalMessages });
+    res.json({messages, totalMessages});
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
   }
 });
 
-// Delete message (logical deletion)
+// Delete message (logical deletion, set flags)
 messageRoutes.route('/delete/:id').delete(verifyToken, async (req, res) => {
   try {
     const user = req.user;
@@ -103,7 +100,7 @@ messageRoutes.route('/delete/:id').delete(verifyToken, async (req, res) => {
 
     const message = await Message.findById(messageId);
     if (!message) {
-      return res.status(404).json({ message: 'Message not found' });
+      return res.status(404).json({message: 'Message not found'});
     }
 
     if (message.receiverUsername === user.username) {
@@ -116,21 +113,12 @@ messageRoutes.route('/delete/:id').delete(verifyToken, async (req, res) => {
 
     await message.save();
 
-    res.json({ message: 'Message deleted' });
+    res.json({message: 'Message deleted'});
   } catch (err) {
     console.log(err);
     res.status(500).send('Internal server error');
   }
 });
 
-// Delete message (Admin only)
-messageRoutes.route('/delete/:id').delete(verifyToken, verifyAdmin, async (req, res) => {
-  try {
-    await Message.findByIdAndDelete(req.params.id);
-    res.json('Message deleted');
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
 
 module.exports = messageRoutes;

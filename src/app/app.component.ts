@@ -11,10 +11,9 @@ export class AppComponent implements OnInit {
   isAdmin: boolean = false;
   isAuthenticated: boolean = false;
   currentRoute: string = '';
-  title: string = 'mean-stack-crud-app';
+  title: string = 'Assignment 3';
 
   constructor(private router: Router, private apiService: ApiService) {
-    // Listen to route changes to update the current route
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.urlAfterRedirects;
@@ -43,7 +42,7 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/login']);
       },
       error => {
-        console.error('Error logging out', error);
+        console.error(error);
       }
     );
   }
